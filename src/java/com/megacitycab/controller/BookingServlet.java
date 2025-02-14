@@ -1,86 +1,101 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.megacitycab.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.megacitycab.model.Booking;
+import com.megacitycab.service.BookingService;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- *
- * @author Kehan Fernando
+ * BookingServlet handles booking-related HTTP requests.
+ * <p>
+ * GET requests are used for retrieving booking details based on a booking number.
+ * POST requests are used for adding a new booking to the system.
+ * This servlet uses BookingService for business logic, following the MVC pattern.
+ * </p>
  */
 public class BookingServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet BookingServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet BookingServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+    private static final long serialVersionUID = 1L;
+    
+    // Singleton instance of BookingService for booking operations.
+    private BookingService bookingService;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        // Obtain the singleton instance of BookingService.
+        bookingService = BookingService.getInstance();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Handles GET requests to retrieve booking details.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+        // Retrieve booking number from request parameters.
+        String bookingNumber = request.getParameter("bookingNumber");
+        if (bookingNumber != null && !bookingNumber.trim().isEmpty()) {
+            Booking booking = bookingService.getBooking(bookingNumber);
+            request.setAttribute("booking", booking);
+        } else {
+            request.setAttribute("errorMessage", "Booking number is required to view booking details.");
+        }
+        // Forward the request to displayBookings.jsp to render booking details.
+        request.getRequestDispatcher("displayingBookings.jsp").forward(request, response);
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Handles POST requests to add a new booking.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+        // Retrieve booking details from the request.
+        String bookingNumber = request.getParameter("bookingNumber");
+        String customerName = request.getParameter("customerName");
+        String customerAddress = request.getParameter("customerAddress");
+        String telephoneNumber = request.getParameter("telephoneNumber");
+        String destination = request.getParameter("destination");
+        String bookingDateStr = request.getParameter("bookingDate");
+        
+        // Parse booking date or use current date if not provided.
+        Date bookingDate = null;
+        if (bookingDateStr != null && !bookingDateStr.trim().isEmpty()) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                bookingDate = sdf.parse(bookingDateStr);
+            } catch (Exception ex) {
+                bookingDate = new Date();
+            }
+        } else {
+            bookingDate = new Date();
+        }
+
+        // Build a Booking object using the Builder pattern.
+        Booking booking = new Booking.Builder(bookingNumber)
+                .customerName(customerName)
+                .customerAddress(customerAddress)
+                .telephoneNumber(telephoneNumber)
+                .destination(destination)
+                .bookingDate(bookingDate)
+                .build();
+
+        // Delegate the creation of the booking to BookingService.
+        boolean isAdded = bookingService.addBooking(booking);
+        if (isAdded) {
+            request.setAttribute("message", "Booking added successfully.");
+        } else {
+            request.setAttribute("errorMessage", "Failed to add booking.");
+        }
+        // Forward to booking.jsp (or another view) for user feedback.
+        request.getRequestDispatcher("booking.jsp").forward(request, response);
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

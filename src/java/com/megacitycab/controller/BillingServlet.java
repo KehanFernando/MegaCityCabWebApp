@@ -1,86 +1,76 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.megacitycab.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.megacitycab.service.BillingService;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
- *
- * @author Kehan Fernando
+ * BillingServlet acts as the controller for handling billing-related requests.
+ * <p>
+ * It retrieves the booking number from the client request, delegates the calculation
+ * of the bill to the BillingService, and forwards the result to a view (JSP) for display.
+ * This design adheres to the MVC pattern and SOLID principles by separating presentation,
+ * business logic, and data access concerns.
+ * </p>
  */
 public class BillingServlet extends HttpServlet {
+    
+    private static final long serialVersionUID = 1L;
+    
+    // Singleton instance of the BillingService used for billing calculations.
+    private BillingService billingService;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet BillingServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet BillingServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        // Obtain the singleton instance of BillingService.
+        billingService = BillingService.getInstance();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
-
+    
     /**
-     * Returns a short description of the servlet.
+     * Processes both GET and POST requests.
      *
-     * @return a String containing servlet description
+     * @param request  the HttpServletRequest object that contains the request from the client.
+     * @param response the HttpServletResponse object that contains the response to the client.
+     * @throws ServletException if a servlet-specific error occurs.
+     * @throws IOException      if an I/O error occurs.
      */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+    private void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        // Retrieve the booking number from request parameters.
+        String bookingNumber = request.getParameter("bookingNumber");
 
+        // Validate that the booking number is provided.
+        double totalBill = 0.0;
+        if (bookingNumber != null && !bookingNumber.trim().isEmpty()) {
+            // Delegate billing calculation to the BillingService.
+            totalBill = billingService.calculateBill(bookingNumber);
+        } else {
+            // Optionally, you might want to handle cases where booking number is missing.
+            request.setAttribute("errorMessage", "Booking number is required.");
+        }
+        
+        // Set attributes for use in the view (JSP).
+        request.setAttribute("bookingNumber", bookingNumber);
+        request.setAttribute("totalBill", totalBill);
+        
+        // Forward the request to billing.jsp to display the result.
+        request.getRequestDispatcher("billing.jsp").forward(request, response);
+    }
 }
