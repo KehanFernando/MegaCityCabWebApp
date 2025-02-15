@@ -154,7 +154,7 @@
             </p>
             <div class="buttons">
                 <a href="booking.jsp">New Booking</a>
-                <a href="BookingServlet">View Bookings</a>
+                <a href="BookingServlet?action=list">View Bookings</a>
                 <a href="billing.jsp">Billing</a>
                 <a href="help.jsp">Help</a>
             </div>

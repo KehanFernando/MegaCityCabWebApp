@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Data Access Object (DAO) for handling booking-related operations in the database.
@@ -16,7 +18,6 @@ import java.util.Date;
  * to ensure a single point of access for booking database operations.
  * </p>
  */
-
 public class BookingDAO {
     // Singleton instance
     private static BookingDAO instance;
@@ -55,7 +56,7 @@ public class BookingDAO {
             stmt.setString(4, booking.getTelephoneNumber());
             stmt.setString(5, booking.getDestination());
             Date bookingDate = booking.getBookingDate();
-            stmt.setTimestamp(6, new Timestamp(bookingDate != null ? bookingDate.getTime() : System.currentTimeMillis()));
+            stmt.setDate(6, new java.sql.Date(bookingDate != null ? bookingDate.getTime() : System.currentTimeMillis()));
 
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;
@@ -86,8 +87,9 @@ public class BookingDAO {
                     String customerAddress = rs.getString("customerAddress");
                     String telephoneNumber = rs.getString("telephoneNumber");
                     String destination = rs.getString("destination");
-                    Timestamp ts = rs.getTimestamp("bookingDate");
-                    Date bookingDate = ts != null ? new Date(ts.getTime()) : null;
+                    java.sql.Date sqlDate = rs.getDate("bookingDate");
+                    Date bookingDate = sqlDate != null ? new Date(sqlDate.getTime()) : null;
+
 
                     // Build the Booking object using the Builder pattern
                     booking = new Booking.Builder(bNumber)
@@ -101,5 +103,42 @@ public class BookingDAO {
             }
         }
         return booking;
+    }
+
+    /**
+     * Retrieves all bookings from the database.
+     *
+     * @return a list of Booking objects.
+     * @throws SQLException if a database access error occurs.
+     */
+    public List<Booking> getAllBookings() throws SQLException {
+        String sql = "SELECT bookingNumber, customerName, customerAddress, telephoneNumber, destination, bookingDate FROM bookings";
+        List<Booking> bookings = new ArrayList<>();
+
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String bNumber = rs.getString("bookingNumber");
+                String customerName = rs.getString("customerName");
+                String customerAddress = rs.getString("customerAddress");
+                String telephoneNumber = rs.getString("telephoneNumber");
+                String destination = rs.getString("destination");
+                Timestamp ts = rs.getTimestamp("bookingDate");
+                Date bookingDate = ts != null ? new Date(ts.getTime()) : null;
+
+                Booking booking = new Booking.Builder(bNumber)
+                        .customerName(customerName)
+                        .customerAddress(customerAddress)
+                        .telephoneNumber(telephoneNumber)
+                        .destination(destination)
+                        .bookingDate(bookingDate)
+                        .build();
+
+                bookings.add(booking);
+            }
+        }
+        return bookings;
     }
 }

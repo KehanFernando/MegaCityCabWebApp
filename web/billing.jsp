@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.megacitycab.service.BillingService.BillingInfo" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,6 +63,7 @@
             width: 100%;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             text-align: center;
+            margin-top: 80px;
         }
         .billing-container h1 {
             margin-bottom: 1rem;
@@ -93,39 +95,89 @@
             margin-bottom: 1rem;
             font-size: 1rem;
         }
+        form {
+            margin-bottom: 1.5rem;
+        }
+        form label {
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        form input[type="text"] {
+            padding: 0.5rem;
+            width: 70%;
+            margin-bottom: 1rem;
+        }
+        form button {
+            padding: 0.5rem 1rem;
+            background-color: #5563DE;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        form button:hover {
+            background-color: #444;
+        }
+        button.print-button {
+            padding: 0.5rem 1rem;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        button.print-button:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
-<!-- Navigation Header -->
+    <!-- Navigation Header -->
     <header class="navbar">
         <a class="brand" href="dashboard.jsp">Mega City Cab</a>
         <nav class="nav-links">
             <a href="booking.jsp">New Booking</a>
-            <a href="displayingBookings.jsp">View Bookings</a>
+            <a href="BookingServlet?action=list">View Bookings</a>
             <a href="billing.jsp">Billing</a>
             <a href="help.jsp">Help</a>
             <a href="dashboard.jsp">Dashboard</a>
         </nav>
     </header>
-    
+
     <div class="billing-container">
-        <h1>Billing Details</h1>
-        <% 
-            String bookingNumber = (String) request.getAttribute("bookingNumber");
-            Double totalBill = (Double) request.getAttribute("totalBill");
+        <h1>Mega City Cab - Billing Details</h1>
+
+        <%
             String errorMessage = (String) request.getAttribute("errorMessage");
-            
-            if (errorMessage != null) {
+            BillingInfo billingInfo = (BillingInfo) request.getAttribute("billingInfo");
         %>
+
+        <!-- Display error message if available -->
+        <% if (errorMessage != null) { %>
             <div class="error-message"><%= errorMessage %></div>
-        <% } else if (bookingNumber != null && totalBill != null) { %>
-            <div class="billing-details">
-                <p><span class="label">Booking Number:</span> <%= bookingNumber %></p>
-                <p><span class="label">Total Bill:</span> $<%= String.format("%.2f", totalBill) %></p>
-            </div>
-        <% } else { %>
-            <div class="error-message">No billing information available.</div>
         <% } %>
+
+        <!-- Billing number entry form -->
+        <form action="BillingServlet" method="post">
+            <label for="bookingNumber">Enter Booking Number:</label>
+            <input type="text" id="bookingNumber" name="bookingNumber" placeholder="e.g., E12345" required>
+            <br/>
+            <button type="submit">Get Billing Details</button>
+        </form>
+
+        <!-- Display billing details if available -->
+        <% if (billingInfo != null) { %>
+            <div class="billing-details">
+                <p><span class="label">Booking Number:</span> <%= billingInfo.getBookingNumber() %></p>
+                <p><span class="label">Customer Address:</span> <%= billingInfo.getCustomerAddress() %></p>
+                <p><span class="label">Destination:</span> <%= billingInfo.getDestination() %></p>
+                <p><span class="label">Distance:</span> <%= String.format("%.2f", billingInfo.getDistance()) %> miles</p>
+                <p><span class="label">Total Bill:</span> $<%= String.format("%.2f", billingInfo.getTotalAmount()) %></p>
+            </div>
+            <button class="print-button" onclick="window.print()">Print Bill</button>
+        <% } %>
+        <br>
         <a class="back-link" href="index.jsp">Return to Home</a>
     </div>
 </body>

@@ -10,13 +10,13 @@ import java.sql.SQLException;
  * Provides billing services for the Mega City Cab system.
  * <p>
  * This service is implemented as a Singleton to ensure a single point of billing calculation.
- * It retrieves booking details from a MySQL database and calculates the total amount using a
- * predefined base fare, tax rate, and any applicable discounts. The service adheres to SOLID and
- * architectural principles by separating billing logic from data access (handled by DBConnectionManager).
+ * It retrieves booking details (including customer address and destination) from a MySQL database,
+ * calculates the distance (using a dummy method that could be replaced by a Google Maps integration),
+ * and then computes the total bill using a base fare, per-mile rate, and tax.
  * </p>
  */
-
 public class BillingService {
+
     // Singleton instance
     private static BillingService instance;
 
@@ -37,25 +37,59 @@ public class BillingService {
     }
 
     /**
-     * Calculates the bill for a given booking number.
+     * DTO class to encapsulate billing details.
+     */
+    public static class BillingInfo {
+        private String bookingNumber;
+        private String customerAddress;
+        private String destination;
+        private double distance; // in miles
+        private double totalAmount;
+
+        public BillingInfo(String bookingNumber, String customerAddress, String destination, double distance, double totalAmount) {
+            this.bookingNumber = bookingNumber;
+            this.customerAddress = customerAddress;
+            this.destination = destination;
+            this.distance = distance;
+            this.totalAmount = totalAmount;
+        }
+
+        public String getBookingNumber() {
+            return bookingNumber;
+        }
+
+        public String getCustomerAddress() {
+            return customerAddress;
+        }
+
+        public String getDestination() {
+            return destination;
+        }
+
+        public double getDistance() {
+            return distance;
+        }
+
+        public double getTotalAmount() {
+            return totalAmount;
+        }
+    }
+
+    /**
+     * Calculates the billing information for a given booking number.
      * <p>
-     * This method connects to the database to verify the existence of the booking and then applies
-     * a billing calculation based on a dummy base fare, tax rate, and discount.
+     * The method retrieves the booking record (customer address and destination) from the database,
+     * calculates the distance between the two locations using a dummy implementation (which could be
+     * replaced by a call to the Google Maps API), and then computes the total bill.
      * </p>
      *
      * @param bookingNumber the unique booking identifier.
-     * @return the total bill amount; returns 0.0 if the booking is not found.
+     * @return an instance of BillingInfo containing detailed billing information, or null if not found.
      */
-    public double calculateBill(String bookingNumber) {
-        // Dummy pricing parameters (in a real application these could come from configuration or business logic)
-        final double baseFare = 100.0;
-        final double taxRate = 0.10;  // 10% tax
-        final double discount = 0.0;  // For example, discount could be calculated based on promotions
-        
-        double totalAmount = 0.0;
-        String sql = "SELECT bookingNumber FROM bookings WHERE bookingNumber = ?";
+    public BillingInfo calculateBill(String bookingNumber) {
+        String sql = "SELECT bookingNumber, customerAddress, destination FROM bookings WHERE bookingNumber = ?";
+        BillingInfo billingInfo = null;
 
-        // Using try-with-resources to ensure proper resource management
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -63,8 +97,21 @@ public class BillingService {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // If booking exists, calculate the total bill.
-                    totalAmount = baseFare + (baseFare * taxRate) - discount;
+                    String customerAddress = rs.getString("customerAddress");
+                    String destination = rs.getString("destination");
+
+                    // Retrieve the distance (in miles) using a dummy integration method.
+                    double distance = getDistance(customerAddress, destination);
+
+                    // Billing parameters.
+                    final double baseFare = 50.0;
+                    final double perMileRate = 2.0;
+                    final double taxRate = 0.10; // 10% tax
+
+                    double amountBeforeTax = baseFare + (distance * perMileRate);
+                    double totalAmount = amountBeforeTax + (amountBeforeTax * taxRate);
+
+                    billingInfo = new BillingInfo(bookingNumber, customerAddress, destination, distance, totalAmount);
                 } else {
                     System.err.println("Booking not found for booking number: " + bookingNumber);
                 }
@@ -73,6 +120,23 @@ public class BillingService {
             System.err.println("Error while calculating bill: " + ex.getMessage());
             ex.printStackTrace();
         }
-        return totalAmount;
+        return billingInfo;
+    }
+
+    /**
+     * Dummy implementation for calculating distance between two addresses.
+     * <p>
+     * In a real-world scenario, this method would integrate with the Google Maps API (or similar)
+     * to retrieve the actual mileage/distance between the origin and destination.
+     * </p>
+     *
+     * @param origin      the starting address.
+     * @param destination the destination address.
+     * @return the distance in miles.
+     */
+    private double getDistance(String origin, String destination) {
+        // TODO: Replace with real Google Maps API integration to compute distance.
+        // For now, we simulate by returning a fixed value.
+        return 10.0;
     }
 }

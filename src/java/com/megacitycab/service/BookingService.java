@@ -1,13 +1,11 @@
 package com.megacitycab.service;
 
-import com.megacitycab.dao.DBConnectionManager;
+import com.megacitycab.dao.BookingDAO;
 import com.megacitycab.model.Booking;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.util.List;
 import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * Provides booking services for the Mega City Cab system.
@@ -17,7 +15,6 @@ import java.util.Date;
  * uses JDBC via DBConnectionManager to interact with the MySQL database.
  * </p>
  */
-
 public class BookingService {
     // Singleton instance
     private static BookingService instance;
@@ -45,22 +42,8 @@ public class BookingService {
      * @return true if the booking was added successfully; false otherwise.
      */
     public boolean addBooking(Booking booking) {
-        String sql = "INSERT INTO bookings (bookingNumber, customerName, customerAddress, telephoneNumber, destination, bookingDate) "
-                   + "VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnectionManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, booking.getBookingNumber());
-            stmt.setString(2, booking.getCustomerName());
-            stmt.setString(3, booking.getCustomerAddress());
-            stmt.setString(4, booking.getTelephoneNumber());
-            stmt.setString(5, booking.getDestination());
-            Date bookingDate = booking.getBookingDate();
-            // Use current timestamp if bookingDate is null
-            stmt.setTimestamp(6, new Timestamp(bookingDate != null ? bookingDate.getTime() : System.currentTimeMillis()));
-
-            int rowsInserted = stmt.executeUpdate();
-            return rowsInserted > 0;
+        try {
+            return BookingDAO.getInstance().addBooking(booking);
         } catch (SQLException ex) {
             System.err.println("Error while adding booking: " + ex.getMessage());
             ex.printStackTrace();
@@ -75,37 +58,27 @@ public class BookingService {
      * @return the Booking object if found; otherwise, null.
      */
     public Booking getBooking(String bookingNumber) {
-        String sql = "SELECT bookingNumber, customerName, customerAddress, telephoneNumber, destination, bookingDate "
-                   + "FROM bookings WHERE bookingNumber = ?";
-        Booking booking = null;
-        try (Connection conn = DBConnectionManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, bookingNumber);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    String bNumber = rs.getString("bookingNumber");
-                    String customerName = rs.getString("customerName");
-                    String customerAddress = rs.getString("customerAddress");
-                    String telephoneNumber = rs.getString("telephoneNumber");
-                    String destination = rs.getString("destination");
-                    Timestamp ts = rs.getTimestamp("bookingDate");
-                    Date bookingDate = ts != null ? new Date(ts.getTime()) : null;
-
-                    // Build the Booking object using the Builder pattern
-                    booking = new Booking.Builder(bNumber)
-                            .customerName(customerName)
-                            .customerAddress(customerAddress)
-                            .telephoneNumber(telephoneNumber)
-                            .destination(destination)
-                            .bookingDate(bookingDate)
-                            .build();
-                }
-            }
+        try {
+            return BookingDAO.getInstance().getBooking(bookingNumber);
         } catch (SQLException ex) {
             System.err.println("Error while retrieving booking: " + ex.getMessage());
             ex.printStackTrace();
+            return null;
         }
-        return booking;
+    }
+
+    /**
+     * Retrieves all bookings from the database.
+     *
+     * @return a list of Booking objects.
+     */
+    public List<Booking> getAllBookings() {
+        try {
+            return BookingDAO.getInstance().getAllBookings();
+        } catch (SQLException ex) {
+            System.err.println("Error while retrieving all bookings: " + ex.getMessage());
+            ex.printStackTrace();
+            return null;
+        }
     }
 }

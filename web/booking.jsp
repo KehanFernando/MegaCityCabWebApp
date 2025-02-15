@@ -117,7 +117,7 @@
         <a class="brand" href="dashboard.jsp">Mega City Cab</a>
         <nav class="nav-links">
             <a href="booking.jsp">New Booking</a>
-            <a href="displayingBookings.jsp">View Bookings</a>
+            <a href="BookingServlet?action=list">View Bookings</a>
             <a href="billing.jsp">Billing</a>
             <a href="help.jsp">Help</a>
             <a href="dashboard.jsp">Dashboard</a>

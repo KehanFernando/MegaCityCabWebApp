@@ -9,11 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * BookingServlet handles booking-related HTTP requests.
  * <p>
- * GET requests are used for retrieving booking details based on a booking number.
+ * GET requests are used for either retrieving all booking previews (when action=list)
+ * or for retrieving booking details based on a booking number.
  * POST requests are used for adding a new booking to the system.
  * This servlet uses BookingService for business logic, following the MVC pattern.
  * </p>
@@ -33,21 +35,33 @@ public class BookingServlet extends HttpServlet {
     }
 
     /**
-     * Handles GET requests to retrieve booking details.
+     * Handles GET requests to retrieve booking details or a list of booking previews.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Retrieve booking number from request parameters.
-        String bookingNumber = request.getParameter("bookingNumber");
-        if (bookingNumber != null && !bookingNumber.trim().isEmpty()) {
-            Booking booking = bookingService.getBooking(bookingNumber);
-            request.setAttribute("booking", booking);
+        String action = request.getParameter("action");
+        
+        // If action is "list", then retrieve all bookings for preview.
+        if ("list".equalsIgnoreCase(action)) {
+            List<Booking> bookings = bookingService.getAllBookings();
+            if (bookings != null && !bookings.isEmpty()) {
+                request.setAttribute("bookings", bookings);
+            } else {
+                request.setAttribute("errorMessage", "No bookings found.");
+            }
         } else {
-            request.setAttribute("errorMessage", "Booking number is required to view booking details.");
+            // Otherwise, if bookingNumber is provided, retrieve its full details.
+            String bookingNumber = request.getParameter("bookingNumber");
+            if (bookingNumber != null && !bookingNumber.trim().isEmpty()) {
+                Booking booking = bookingService.getBooking(bookingNumber);
+                request.setAttribute("booking", booking);
+            } else {
+                request.setAttribute("errorMessage", "Booking number is required to view booking details.");
+            }
         }
-        // Forward the request to displayBookings.jsp to render booking details.
+        // Forward the request to displayingBookings.jsp to render either the list or details.
         request.getRequestDispatcher("displayingBookings.jsp").forward(request, response);
     }
 

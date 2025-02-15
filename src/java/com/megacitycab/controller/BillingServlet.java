@@ -1,6 +1,7 @@
 package com.megacitycab.controller;
 
 import com.megacitycab.service.BillingService;
+import com.megacitycab.service.BillingService.BillingInfo;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,15 +12,14 @@ import java.io.IOException;
  * BillingServlet acts as the controller for handling billing-related requests.
  * <p>
  * It retrieves the booking number from the client request, delegates the calculation
- * of the bill to the BillingService, and forwards the result to a view (JSP) for display.
- * This design adheres to the MVC pattern and SOLID principles by separating presentation,
- * business logic, and data access concerns.
+ * of the billing details to the BillingService, and forwards the result to a view (billing.jsp)
+ * for display.
  * </p>
  */
 public class BillingServlet extends HttpServlet {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     // Singleton instance of the BillingService used for billing calculations.
     private BillingService billingService;
 
@@ -41,7 +41,7 @@ public class BillingServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-    
+
     /**
      * Processes both GET and POST requests.
      *
@@ -52,24 +52,25 @@ public class BillingServlet extends HttpServlet {
      */
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // Retrieve the booking number from request parameters.
         String bookingNumber = request.getParameter("bookingNumber");
 
-        // Validate that the booking number is provided.
-        double totalBill = 0.0;
+        BillingInfo billingInfo = null;
         if (bookingNumber != null && !bookingNumber.trim().isEmpty()) {
             // Delegate billing calculation to the BillingService.
-            totalBill = billingService.calculateBill(bookingNumber);
+            billingInfo = billingService.calculateBill(bookingNumber);
+            if (billingInfo == null) {
+                request.setAttribute("errorMessage", "Booking not found for booking number: " + bookingNumber);
+            }
         } else {
-            // Optionally, you might want to handle cases where booking number is missing.
+            // Handle cases where booking number is missing.
             request.setAttribute("errorMessage", "Booking number is required.");
         }
-        
-        // Set attributes for use in the view (JSP).
-        request.setAttribute("bookingNumber", bookingNumber);
-        request.setAttribute("totalBill", totalBill);
-        
+
+        // Set the billing info attribute for use in the view (JSP).
+        request.setAttribute("billingInfo", billingInfo);
+
         // Forward the request to billing.jsp to display the result.
         request.getRequestDispatcher("billing.jsp").forward(request, response);
     }
