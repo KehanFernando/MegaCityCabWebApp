@@ -14,7 +14,7 @@
         }
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #74ABE2, #5563DE);
+            background: #f2f2f2;
             display: flex;
             align-items: center;
             justify-content: center;

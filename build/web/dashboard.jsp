@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #74ABE2, #5563DE);
+            background: #f2f2f2;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -136,7 +136,7 @@
 
     <div class="container">
         <div class="welcome-message">
-            <h1>Welcome to Mega City Cab Dashboard</h1>
+            <h1>Welcome To: <br> Mega City Cab Dashboard!</h1>
             <p>
                 Hello, 
                 <% 
@@ -155,6 +155,7 @@
             <div class="buttons">
                 <a href="booking.jsp">New Booking</a>
                 <a href="BookingServlet?action=list">View Bookings</a>
+                <a href="register.jsp">Registration</a>
                 <a href="billing.jsp">Billing</a>
                 <a href="help.jsp">Help</a>
             </div>

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mega City Cab - Dashboard</title>
+    <title>Mega City Cab - Register</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* Reset defaults */
@@ -21,36 +21,38 @@
             flex-direction: column;
         }
 
-        .navbar {
-            background-color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
+        /* Navigation styling */
+        header.navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
         }
-
-        .navbar .brand {
-            font-weight: bold;
+        header.navbar .brand {
             font-size: 1.2rem;
+            font-weight: bold;
             color: #333;
             text-decoration: none;
         }
-
-        .nav-links {
+        header.navbar .nav-links {
             display: flex;
             gap: 1rem;
         }
-
-        .nav-links a {
+        header.navbar .nav-links a {
             color: #5563DE;
             text-decoration: none;
             font-size: 1rem;
             transition: color 0.3s;
         }
-
-        .nav-links a:hover {
-            color: #333;
+        header.navbar .nav-links a:hover {
+            color: #444;
         }
 
         .container {
@@ -130,13 +132,22 @@
     </style>
 </head>
 <body>
+    <!-- Navigation Header -->
     <header class="navbar">
-        <a href="#" class="brand">Mega City Cab</a>
+        <a class="brand" href="dashboard.jsp">Mega City Cab</a>
+        <nav class="nav-links">
+            <a href="booking.jsp">New Booking</a>
+            <a href="BookingServlet?action=list">View Bookings</a>
+            <a href="register.jsp">Registration</a>
+            <a href="billing.jsp">Billing</a>
+            <a href="help.jsp">Help</a>
+            <a href="dashboard.jsp">Dashboard</a>
+        </nav>
     </header>
 
     <div class="container">
         <div class="welcome-message">
-            <h1>Welcome To: <br> Mega City Cab Dashboard!</h1>
+            <h1>Mega City Cab Registration!</h1>
             <p>
                 Hello, 
                 <% 
@@ -149,15 +160,13 @@
                     }
                 %>!
                 <br><br>
-                This is your central hub for managing cab bookings, billing, and more. 
-                Use the buttons below or the navigation bar above to access different features.
+                This is your registration hub for registering customers, cars and drivers. 
+                Use the buttons below to access different registrations.
             </p>
             <div class="buttons">
-                <a href="booking.jsp">New Booking</a>
-                <a href="BookingServlet?action=list">View Bookings</a>
-                <a href="register.jsp">Registration</a>
-                <a href="billing.jsp">Billing</a>
-                <a href="help.jsp">Help</a>
+                <a href="#">Customer Register</a>
+                <a href="#">Car Register</a>
+                <a href="#">Driver Register</a>
             </div>
         </div>
     </div>
