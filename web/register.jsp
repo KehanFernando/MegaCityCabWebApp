@@ -165,8 +165,8 @@
             </p>
             <div class="buttons">
                 <a href="#">Customer Register</a>
-                <a href="#">Car Register</a>
-                <a href="#">Driver Register</a>
+                <a href="carReg.jsp">Car Register</a>
+                <a href="driverReg.jsp">Driver Register</a>
             </div>
         </div>
     </div>

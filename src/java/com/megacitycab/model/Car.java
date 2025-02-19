@@ -3,30 +3,31 @@ package com.megacitycab.model;
 import java.util.Objects;
 
 /**
- * Represents a car in the Mega City Cab system.
+ * Represents a vehicle in the Mega City Cab system.
  * <p>
  * This class is designed using the Builder pattern to enforce immutability and
- * provide a clear, flexible construction process for Car objects.
+ * provide a clear, flexible construction process for Vehicle objects.
  * <p>
- * Adheres to the Single Responsibility Principle by solely representing car data.
+ * Adheres to the Single Responsibility Principle by solely representing vehicle data.
  */
-
 public class Car {
-    // Core attributes for a Car
-    private final String carId;         // Unique identifier for the car
-    private final String licensePlate;  // License plate number
-    private final String model;         // Model of the car
-    private final String brand;         // Brand or manufacturer
-    private final String color;         // Color of the car
-    private final int seatingCapacity;  // Number of seats available
+    // Core attributes for a Vehicle
+    private final String vehicleType;     // Type of the vehicle (Car, SUV, Van, Bus)
+    private final String vehicleRegId;    // Auto-generated unique registration ID
+    private final String licensePlate;    // License plate number
+    private final String model;           // Model of the vehicle
+    private final String brand;           // Brand or manufacturer
+    private final String color;           // Color of the vehicle
+    private final int seatingCapacity;    // Number of seats available
 
     /**
      * Private constructor to enforce object creation via the Builder.
      *
-     * @param builder the Builder instance containing car data.
+     * @param builder the Builder instance containing vehicle data.
      */
     private Car(Builder builder) {
-        this.carId = builder.carId;
+        this.vehicleType = builder.vehicleType;
+        this.vehicleRegId = builder.vehicleRegId;
         this.licensePlate = builder.licensePlate;
         this.model = builder.model;
         this.brand = builder.brand;
@@ -35,8 +36,12 @@ public class Car {
     }
 
     // Getters for all fields (no setters to preserve immutability)
-    public String getCarId() {
-        return carId;
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public String getVehicleRegId() {
+        return vehicleRegId;
     }
 
     public String getLicensePlate() {
@@ -62,7 +67,8 @@ public class Car {
     @Override
     public String toString() {
         return "Car{" +
-                "carId='" + carId + '\'' +
+                "vehicleType='" + vehicleType + '\'' +
+                ", vehicleRegId='" + vehicleRegId + '\'' +
                 ", licensePlate='" + licensePlate + '\'' +
                 ", model='" + model + '\'' +
                 ", brand='" + brand + '\'' +
@@ -73,7 +79,7 @@ public class Car {
 
     @Override
     public int hashCode() {
-        return Objects.hash(carId);
+        return Objects.hash(vehicleRegId);
     }
 
     @Override
@@ -81,7 +87,7 @@ public class Car {
         if (this == obj) return true;
         if (!(obj instanceof Car)) return false;
         Car other = (Car) obj;
-        return Objects.equals(this.carId, other.carId);
+        return Objects.equals(this.vehicleRegId, other.vehicleRegId);
     }
 
     /**
@@ -91,8 +97,10 @@ public class Car {
      * approach to constructing immutable Car objects.
      */
     public static class Builder {
-        // Required attribute
-        private final String carId;
+        // Required attributes
+        private final String vehicleType;
+        private final String vehicleRegId;
+        
         // Optional attributes
         private String licensePlate;
         private String model;
@@ -101,15 +109,20 @@ public class Car {
         private int seatingCapacity;
 
         /**
-         * Builder constructor with the required carId.
+         * Builder constructor with the required fields.
          *
-         * @param carId the unique identifier for the car (must not be null or empty)
+         * @param vehicleType  the type of the vehicle (must not be null or empty)
+         * @param vehicleRegId the auto-generated vehicle registration ID (must not be null or empty)
          */
-        public Builder(String carId) {
-            if (carId == null || carId.trim().isEmpty()) {
-                throw new IllegalArgumentException("Car ID cannot be null or empty.");
+        public Builder(String vehicleType, String vehicleRegId) {
+            if (vehicleType == null || vehicleType.trim().isEmpty()) {
+                throw new IllegalArgumentException("Vehicle type cannot be null or empty.");
             }
-            this.carId = carId;
+            if (vehicleRegId == null || vehicleRegId.trim().isEmpty()) {
+                throw new IllegalArgumentException("Vehicle Registration ID cannot be null or empty.");
+            }
+            this.vehicleType = vehicleType;
+            this.vehicleRegId = vehicleRegId;
         }
 
         public Builder licensePlate(String licensePlate) {
