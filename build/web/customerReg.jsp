@@ -1,12 +1,16 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" import="java.util.Random" %>
+<%
+    // Generate a random registration number in the format CUS_XXXXX
+    int randomNum = 10000 + new Random().nextInt(90000);
+    String registrationNumber = "CUS_" + randomNum;
+%>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Mega City Cab - New Booking</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Registration</title>
     <style>
-        /* Reset defaults */
+        /* Global reset and basic styling */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -21,7 +25,7 @@
             min-height: 100vh;
             padding: 20px;
         }
-         /* Navigation styling */
+        /* Navigation styling */
         header.navbar {
             position: fixed;
             top: 0;
@@ -91,6 +95,7 @@
             width: 400px;
             max-width: 100%;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 80px;
         }
         .booking-container h2 {
             text-align: center;
@@ -113,6 +118,9 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 1rem;
+        }
+        .booking-container input[readonly] {
+            background: #e9ecef;
         }
         .booking-container button {
             padding: 0.75rem;
@@ -139,6 +147,18 @@
             font-size: 1rem;
             color: red;
         }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            text-decoration: none;
+            font-size: 1rem;
+            color: #5563DE;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover {
+            color: #444;
+        }
     </style>
 </head>
 <body>
@@ -154,40 +174,41 @@
             <a href="dashboard.jsp"></a>
         </nav>
     </header>
-<!-- Existing booking container -->
-<div class="booking-container">
-    <h2>New Booking</h2>
-    <%-- Display messages if available --%>
-    <% 
-        String message = (String) request.getAttribute("message");
-        String errorMessage = (String) request.getAttribute("errorMessage");
-        if (message != null) { 
-    %>
-        <div class="message"><%= message %></div>
-    <% } else if (errorMessage != null) { %>
-        <div class="error-message"><%= errorMessage %></div>
-    <% } %>
-    <form action="BookingServlet" method="post">
-        <label for="bookingNumber">Booking Number</label>
-        <input type="text" id="bookingNumber" name="bookingNumber" placeholder="Enter booking number" required>
-
-        <label for="customerName">Customer Name</label>
-        <input type="text" id="customerName" name="customerName" placeholder="Enter your name" required>
-
-        <label for="customerAddress">Customer Address</label>
-        <input type="text" id="customerAddress" name="customerAddress" placeholder="Enter your address" required>
-
-        <label for="telephoneNumber">Telephone Number</label>
-        <input type="text" id="telephoneNumber" name="telephoneNumber" placeholder="Enter telephone number" required>
-
-        <label for="destination">Destination</label>
-        <input type="text" id="destination" name="destination" placeholder="Enter destination" required>
-
-        <label for="bookingDate">Booking Date</label>
-        <input type="date" id="bookingDate" name="bookingDate">
-
-        <button type="submit">Submit Booking</button>
-    </form>
-</div>
+    
+    <div class="booking-container">
+        <h2>Customer Registration</h2>
+        <%-- Display dynamic messages if present --%>
+        <%
+            String message = (String) request.getAttribute("message");
+            String errorMessage = (String) request.getAttribute("errorMessage");
+            if (message != null) {
+        %>
+            <div class="message"><%= message %></div>
+        <% } else if (errorMessage != null) { %>
+            <div class="error-message"><%= errorMessage %></div>
+        <% } %>
+        <form action="CustomerRegistrationServlet" method="post">
+            <!-- Display the auto-generated registration number (read-only) -->
+            <label for="registrationNumber">Registration Number</label>
+            <input type="text" id="registrationNumber" name="registrationNumberDisplay" value="<%= registrationNumber %>" readonly>
+            <!-- Hidden field to submit the registration number -->
+            <input type="hidden" name="registrationNumber" value="<%= registrationNumber %>">
+            
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="address">Address</label>
+            <input type="text" id="address" name="address">
+            
+            <label for="nic">NIC</label>
+            <input type="text" id="nic" name="nic">
+            
+            <label for="telephone">Telephone</label>
+            <input type="text" id="telephone" name="telephone">
+            
+            <button type="submit">Register</button>
+        </form>
+            <a class="back-link" href="register.jsp">Return Back</a>
+    </div>
 </body>
 </html>

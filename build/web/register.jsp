@@ -54,6 +54,36 @@
         header.navbar .nav-links a:hover {
             color: #444;
         }
+        /* Style for the Dashboard link with icon */
+        header.navbar .nav-links a[href="dashboard.jsp"] {
+          position: relative;
+          padding-left: 30px; /* space for the icon */
+          background: url('https://img.icons8.com/?size=100&id=S5D5w5vFLhYp&format=png&color=000000') no-repeat left center;
+          background-size: 20px 20px;
+        }
+
+        /* Tooltip styling on hover */
+        header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
+          content: 'Dashboard';
+          position: absolute;
+          bottom: -30px; /* position tooltip below the link */
+          left: 50%;
+          transform: translateX(-50%);
+          background: #333;
+          color: #fff;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 0.85rem;
+          white-space: nowrap;
+          opacity: 0;
+          transition: opacity 0.3s;
+          pointer-events: none;
+        }
+
+        /* Make tooltip visible on hover */
+        header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
+          opacity: 1;
+        }
 
         .container {
             flex: 1;
@@ -141,7 +171,8 @@
             <a href="register.jsp">Registration</a>
             <a href="billing.jsp">Billing</a>
             <a href="help.jsp">Help</a>
-            <a href="dashboard.jsp">Dashboard</a>
+            <a href="viewEdt.jsp">View</a>
+            <a href="dashboard.jsp"></a>
         </nav>
     </header>
 
@@ -164,7 +195,7 @@
                 Use the buttons below to access different registrations.
             </p>
             <div class="buttons">
-                <a href="#">Customer Register</a>
+                <a href="customerReg.jsp">Customer Register</a>
                 <a href="carReg.jsp">Car Register</a>
                 <a href="driverReg.jsp">Driver Register</a>
             </div>

@@ -1,6 +1,5 @@
 package com.megacitycab.dao;
 
-
 import com.megacitycab.model.Customer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,13 +8,7 @@ import java.sql.SQLException;
 
 /**
  * Data Access Object (DAO) for handling customer-related operations in the database.
- * <p>
- * This class encapsulates all CRUD operations for Customer objects. It follows the DAO pattern,
- * separating data persistence logic from business logic, and is implemented as a Singleton to
- * ensure a single point of access for customer database operations.
- * </p>
  */
-
 public class CustomerDAO {
     // Singleton instance of CustomerDAO
     private static CustomerDAO instance;
@@ -95,4 +88,23 @@ public class CustomerDAO {
         }
         return customer;
     }
+        /**
+     * Updates an existing customer record.
+     */
+    public boolean updateCustomer(Customer customer) throws Exception {
+        String sql = "UPDATE customers SET name = ?, address = ?, nic = ?, telephone = ? WHERE registrationNumber = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, customer.getName());
+            stmt.setString(2, customer.getAddress());
+            stmt.setString(3, customer.getNic());
+            stmt.setString(4, customer.getTelephone());
+            stmt.setString(5, customer.getRegistrationNumber());
+
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        }
+    }
+
 }

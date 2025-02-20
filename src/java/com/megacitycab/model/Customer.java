@@ -6,10 +6,8 @@ import java.util.Objects;
  * Represents a Customer in the Mega City Cab system.
  * <p>
  * This class is designed using the Builder pattern to enforce immutability and to provide a clear,
- * flexible construction process for Customer objects. It adheres to the Single Responsibility Principle,
- * focusing solely on customer-related data.
+ * flexible construction process for Customer objects.
  */
-
 public class Customer {
     // Required field: Unique customer registration number.
     private final String registrationNumber;
@@ -79,9 +77,6 @@ public class Customer {
 
     /**
      * Builder class for constructing Customer instances.
-     * <p>
-     * This Builder follows the Builder design pattern, providing a flexible and readable
-     * approach to constructing immutable Customer objects.
      */
     public static class Builder {
         // Required attribute for a Customer.
