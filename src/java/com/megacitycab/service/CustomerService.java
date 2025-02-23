@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 /**
  * Service class for handling business logic related to Customer.
- * This class mediates between the controller (servlet) and the DAO.
  */
 public class CustomerService {
 
@@ -37,4 +36,32 @@ public class CustomerService {
     public Customer getCustomer(String registrationNumber) throws SQLException {
         return customerDAO.getCustomer(registrationNumber);
     }
+
+    /**
+     * Retrieves a customer based on NIC.
+     *
+     * @param nic the NIC number of the customer.
+     * @return the Customer object if found; otherwise, null.
+     * @throws SQLException if a database error occurs.
+     */
+    public Customer getCustomerByNic(String nic) throws SQLException {
+        return customerDAO.getCustomerByNic(nic);
+    }
+    
+    /**
+     * Updates an existing customer record.
+     *
+     * @param customer the Customer object with updated details.
+     * @return true if the update was successful; false otherwise.
+     * @throws Exception if a database error occurs.
+     */
+    public boolean updateCustomer(Customer customer) throws Exception {
+        return customerDAO.updateCustomer(customer);
+    }
+    
+    
+    public Customer getCustomerByRegOrNic(String input) throws SQLException {
+    return CustomerDAO.getInstance().getCustomerByRegOrNic(input);
+}
+
 }

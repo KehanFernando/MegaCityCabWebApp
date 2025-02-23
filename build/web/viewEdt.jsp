@@ -21,8 +21,7 @@
             width: 600px;
             max-width: 100%;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-top: 40px;
-            margin-top: 125px;
+            margin-top: 90px;
         }
         h2 {
             text-align: center;
@@ -159,6 +158,36 @@
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
           opacity: 1;
         }
+        
+        /* Style for the Dashboard link with icon */
+        header.navbar .nav-links a[href="index.jsp"] {
+          position: relative;
+          padding-left: 30px; /* space for the icon */
+          background: url('https://img.icons8.com/?size=100&id=111473&format=png&color=000000') no-repeat left center;
+          background-size: 20px 20px;
+        }
+
+        /* Tooltip styling on hover */
+        header.navbar .nav-links a[href="index.jsp"]:hover::after {
+          content: 'Dashboard';
+          position: absolute;
+          bottom: -30px; /* position tooltip below the link */
+          left: 50%;
+          transform: translateX(-50%);
+          background: #333;
+          color: #fff;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 0.85rem;
+          white-space: nowrap;
+          opacity: 0;
+          transition: opacity 0.3s;
+          pointer-events: none;
+        }
+
+        /* Make tooltip visible on hover */
+        header.navbar .nav-links a[href="index.jsp"]:hover::after {
+          opacity: 1;
     </style>
 </head>
 <body>
@@ -169,10 +198,11 @@
             <a href="booking.jsp">New Booking</a>
             <a href="BookingServlet?action=list">View Bookings</a>
             <a href="register.jsp">Registration</a>
+            <a href="viewEdt.jsp">View</a>
             <a href="billing.jsp">Billing</a>
             <a href="help.jsp">Help</a>
-            <a href="viewEdt.jsp">View</a>
             <a href="dashboard.jsp"></a>
+            <a href="index.jsp"></a>
         </nav>
     </header>
     
@@ -181,7 +211,7 @@
     <!-- Search Section -->
     <div class="search-section">
         <form action="ViewEditServlet" method="get">
-            <input type="text" name="searchId" placeholder="Enter ID (e.g., CUS_123, DI456, V789)" required />
+            <input type="text" name="searchId" placeholder="Enter ID (e.g., CUS_123, DI456, V789 or NIC)" required />
             <button type="submit">Search</button>
         </form>
     </div>

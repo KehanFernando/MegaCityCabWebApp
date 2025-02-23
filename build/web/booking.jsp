@@ -21,7 +21,7 @@
             min-height: 100vh;
             padding: 20px;
         }
-         /* Navigation styling */
+        /* Navigation styling */
         header.navbar {
             position: fixed;
             top: 0;
@@ -61,7 +61,6 @@
           background: url('https://img.icons8.com/?size=100&id=S5D5w5vFLhYp&format=png&color=000000') no-repeat left center;
           background-size: 20px 20px;
         }
-
         /* Tooltip styling on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
           content: 'Dashboard';
@@ -79,11 +78,39 @@
           transition: opacity 0.3s;
           pointer-events: none;
         }
-
         /* Make tooltip visible on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
           opacity: 1;
         }
+        /* Style for the Dashboard link with icon */
+        header.navbar .nav-links a[href="index.jsp"] {
+          position: relative;
+          padding-left: 30px; /* space for the icon */
+          background: url('https://img.icons8.com/?size=100&id=111473&format=png&color=000000') no-repeat left center;
+          background-size: 20px 20px;
+        }
+        /* Tooltip styling on hover */
+        header.navbar .nav-links a[href="index.jsp"]:hover::after {
+          content: 'Dashboard';
+          position: absolute;
+          bottom: -30px; /* position tooltip below the link */
+          left: 50%;
+          transform: translateX(-50%);
+          background: #333;
+          color: #fff;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 0.85rem;
+          white-space: nowrap;
+          opacity: 0;
+          transition: opacity 0.3s;
+          pointer-events: none;
+        }
+        /* Make tooltip visible on hover */
+        header.navbar .nav-links a[href="index.jsp"]:hover::after {
+          opacity: 1;
+        }
+        /* Booking container styling */
         .booking-container {
             background: #fff;
             padding: 2rem;
@@ -91,6 +118,7 @@
             width: 400px;
             max-width: 100%;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 75px;
         }
         .booking-container h2 {
             text-align: center;
@@ -140,6 +168,48 @@
             color: red;
         }
     </style>
+    <script>
+        // Function to auto-generate a booking number in the format "BKN" followed by 6 digits.
+        function generateBookingNumber() {
+            var randomNum = Math.floor(100000 + Math.random() * 900000);
+            document.getElementById("bookingNumber").value = "BKN" + randomNum;
+        }
+
+        // Function to fetch customer details based on Registration Number or NIC.
+        function fetchCustomerDetails() {
+            var regNo = document.getElementById("customerRegNo").value;
+            if (regNo.trim() === "") {
+                return;
+            }
+            // Use the correct servlet mapping: CustomerRegistrationServlet
+            var url = "<%= request.getContextPath() %>/CustomerRegistrationServlet?action=getCustomer&customerRegNo=" + encodeURIComponent(regNo);
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("HTTP error, status = " + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.customerName) {
+                        document.getElementById("customerName").value = data.customerName;
+                        document.getElementById("telephoneNumber").value = data.telephoneNumber;
+                    } else {
+                        document.getElementById("customerName").value = "";
+                        document.getElementById("telephoneNumber").value = "";
+                        alert("Customer not found");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching customer details:", error);
+                    alert("Error fetching customer details: " + error.message);
+                });
+        }
+
+        window.onload = function() {
+            generateBookingNumber();
+        }
+    </script>
 </head>
 <body>
     <!-- Navigation Header -->
@@ -149,45 +219,56 @@
             <a href="booking.jsp">New Booking</a>
             <a href="BookingServlet?action=list">View Bookings</a>
             <a href="register.jsp">Registration</a>
+            <a href="viewEdt.jsp">View</a>
             <a href="billing.jsp">Billing</a>
             <a href="help.jsp">Help</a>
             <a href="dashboard.jsp"></a>
+            <a href="index.jsp"></a>
         </nav>
     </header>
-<!-- Existing booking container -->
-<div class="booking-container">
-    <h2>New Booking</h2>
-    <%-- Display messages if available --%>
-    <% 
-        String message = (String) request.getAttribute("message");
-        String errorMessage = (String) request.getAttribute("errorMessage");
-        if (message != null) { 
-    %>
-        <div class="message"><%= message %></div>
-    <% } else if (errorMessage != null) { %>
-        <div class="error-message"><%= errorMessage %></div>
-    <% } %>
-    <form action="BookingServlet" method="post">
-        <label for="bookingNumber">Booking Number</label>
-        <input type="text" id="bookingNumber" name="bookingNumber" placeholder="Enter booking number" required>
+    <!-- Booking container -->
+    <div class="booking-container">
+        <h2>New Booking</h2>
+        <% 
+            String message = (String) request.getAttribute("message");
+            String errorMessage = (String) request.getAttribute("errorMessage");
+            if (message != null) { 
+        %>
+            <div class="message"><%= message %></div>
+        <% } else if (errorMessage != null) { %>
+            <div class="error-message"><%= errorMessage %></div>
+        <% } %>
+        <form action="BookingServlet" method="post">
+            <!-- Auto-generated Booking Number -->
+            <label for="bookingNumber">Booking Number</label>
+            <input type="text" id="bookingNumber" name="bookingNumber" readonly placeholder="Auto generated Booking Number">
 
-        <label for="customerName">Customer Name</label>
-        <input type="text" id="customerName" name="customerName" placeholder="Enter your name" required>
+            <!-- Customer Registration Number / NIC -->
+            <label for="customerRegNo">Customer Registration Number / NIC</label>
+            <input type="text" id="customerRegNo" name="customerRegNo" placeholder="Enter Registration Number or NIC" required onblur="fetchCustomerDetails()">
 
-        <label for="customerAddress">Customer Address</label>
-        <input type="text" id="customerAddress" name="customerAddress" placeholder="Enter your address" required>
+            <!-- Auto-filled Customer Name -->
+            <label for="customerName">Customer Name</label>
+            <input type="text" id="customerName" name="customerName" placeholder="Customer Name" readonly>
 
-        <label for="telephoneNumber">Telephone Number</label>
-        <input type="text" id="telephoneNumber" name="telephoneNumber" placeholder="Enter telephone number" required>
+            <!-- Auto-filled Telephone Number -->
+            <label for="telephoneNumber">Contact Number</label>
+            <input type="text" id="telephoneNumber" name="telephoneNumber" placeholder="Telephone Number" readonly>
 
-        <label for="destination">Destination</label>
-        <input type="text" id="destination" name="destination" placeholder="Enter destination" required>
+            <!-- Pickup Location -->
+            <label for="pickupLocation">Pickup Location</label>
+            <input type="text" id="pickupLocation" name="pickupLocation" placeholder="Enter Pickup Location" required>
 
-        <label for="bookingDate">Booking Date</label>
-        <input type="date" id="bookingDate" name="bookingDate">
+            <!-- Destination -->
+            <label for="destination">Destination</label>
+            <input type="text" id="destination" name="destination" placeholder="Enter Destination" required>
 
-        <button type="submit">Submit Booking</button>
-    </form>
-</div>
+            <!-- Booking Date -->
+            <label for="bookingDate">Booking Date</label>
+            <input type="date" id="bookingDate" name="bookingDate">
+
+            <button type="submit">Submit Booking</button>
+        </form>
+    </div>
 </body>
 </html>

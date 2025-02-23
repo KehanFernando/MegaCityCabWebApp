@@ -5,25 +5,17 @@ import java.util.Objects;
 
 /**
  * Represents a cab booking in the Mega City Cab system.
- * <p>
- * This class is implemented using the Builder design pattern to ensure immutability
- * and to facilitate the creation of Booking objects in a clear and controlled manner.
+ * This class is implemented using the Builder design pattern.
  */
-
 public class Booking {
-    // Core attributes for a booking
     private final String bookingNumber;
     private final String customerName;
     private final String customerAddress;
     private final String telephoneNumber;
     private final String destination;
     private final Date bookingDate;
+    private final String customerRegNo;
 
-    /**
-     * Private constructor to enforce object creation via the Builder.
-     *
-     * @param builder the Builder instance with set properties.
-     */
     private Booking(Builder builder) {
         this.bookingNumber = builder.bookingNumber;
         this.customerName = builder.customerName;
@@ -31,9 +23,9 @@ public class Booking {
         this.telephoneNumber = builder.telephoneNumber;
         this.destination = builder.destination;
         this.bookingDate = builder.bookingDate != null ? new Date(builder.bookingDate.getTime()) : null;
+        this.customerRegNo = builder.customerRegNo;
     }
 
-    // Getters for all fields (no setters to preserve immutability)
     public String getBookingNumber() {
         return bookingNumber;
     }
@@ -57,11 +49,17 @@ public class Booking {
     public Date getBookingDate() {
         return bookingDate != null ? new Date(bookingDate.getTime()) : null;
     }
+    
+    // Correct getter name matching the SQL and usage in DAO.
+    public String getCustomerRegNo() {
+        return customerRegNo;
+    }
 
     @Override
     public String toString() {
         return "Booking{" +
                 "bookingNumber='" + bookingNumber + '\'' +
+                ", customerRegNo='" + customerRegNo + '\'' +
                 ", customerName='" + customerName + '\'' +
                 ", customerAddress='" + customerAddress + '\'' +
                 ", telephoneNumber='" + telephoneNumber + '\'' +
@@ -83,27 +81,15 @@ public class Booking {
         return Objects.equals(bookingNumber, other.bookingNumber);
     }
 
-    /**
-     * Builder class for constructing Booking instances.
-     * <p>
-     * This follows the Builder design pattern to create Booking objects
-     * in a step-by-step manner while ensuring that required fields are provided.
-     */
     public static class Builder {
-        // Required attribute (assumed mandatory)
         private final String bookingNumber;
-        // Optional attributes
         private String customerName;
         private String customerAddress;
         private String telephoneNumber;
         private String destination;
         private Date bookingDate;
+        private String customerRegNo;
 
-        /**
-         * Builder constructor with required booking number.
-         *
-         * @param bookingNumber the unique booking number (must not be null or empty)
-         */
         public Builder(String bookingNumber) {
             if (bookingNumber == null || bookingNumber.trim().isEmpty()) {
                 throw new IllegalArgumentException("Booking number cannot be null or empty.");
@@ -135,14 +121,13 @@ public class Booking {
             this.bookingDate = bookingDate != null ? new Date(bookingDate.getTime()) : null;
             return this;
         }
+        
+        public Builder customerRegNo(String customerRegNo) {
+            this.customerRegNo = customerRegNo;
+            return this;
+        }
 
-        /**
-         * Constructs a Booking instance with the provided values.
-         *
-         * @return a new Booking object.
-         */
         public Booking build() {
-            // Additional validation can be done here if needed.
             return new Booking(this);
         }
     }

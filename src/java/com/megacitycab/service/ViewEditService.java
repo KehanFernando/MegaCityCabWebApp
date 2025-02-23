@@ -12,16 +12,27 @@ public class ViewEditService {
     private CustomerDAO customerDAO;
     private DriverDAO driverDAO;
     private CarRegistrationDAO carDAO;
+    private CustomerService customerService;
 
     public ViewEditService() {
         customerDAO = CustomerDAO.getInstance();
         driverDAO = new DriverDAO();
         carDAO = new CarRegistrationDAO();
+        customerService = new CustomerService();
     }
 
     public Customer getCustomer(String registrationNumber) {
         try {
             return customerDAO.getCustomer(registrationNumber);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Customer getCustomerByNic(String nic) {
+        try {
+            return customerService.getCustomerByNic(nic);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

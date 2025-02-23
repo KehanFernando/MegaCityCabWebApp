@@ -62,12 +62,11 @@
           background: url('https://img.icons8.com/?size=100&id=S5D5w5vFLhYp&format=png&color=000000') no-repeat left center;
           background-size: 20px 20px;
         }
-
         /* Tooltip styling on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
           content: 'Dashboard';
           position: absolute;
-          bottom: -30px; /* position tooltip below the link */
+          bottom: -30px;
           left: 50%;
           transform: translateX(-50%);
           background: #333;
@@ -80,11 +79,40 @@
           transition: opacity 0.3s;
           pointer-events: none;
         }
-
         /* Make tooltip visible on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
           opacity: 1;
         }
+        
+        /* Style for the Dashboard link with icon */
+        header.navbar .nav-links a[href="index.jsp"] {
+          position: relative;
+          padding-left: 30px;
+          background: url('https://img.icons8.com/?size=100&id=111473&format=png&color=000000') no-repeat left center;
+          background-size: 20px 20px;
+        }
+        /* Tooltip styling on hover */
+        header.navbar .nav-links a[href="index.jsp"]:hover::after {
+          content: 'Dashboard';
+          position: absolute;
+          bottom: -30px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #333;
+          color: #fff;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 0.85rem;
+          white-space: nowrap;
+          opacity: 0;
+          transition: opacity 0.3s;
+          pointer-events: none;
+        }
+        /* Make tooltip visible on hover */
+        header.navbar .nav-links a[href="index.jsp"]:hover::after {
+          opacity: 1;
+        }
+        
         .billing-container {
             background: #fff;
             padding: 2rem;
@@ -170,9 +198,11 @@
             <a href="booking.jsp">New Booking</a>
             <a href="BookingServlet?action=list">View Bookings</a>
             <a href="register.jsp">Registration</a>
+            <a href="viewEdt.jsp">View</a>
             <a href="billing.jsp">Billing</a>
             <a href="help.jsp">Help</a>
             <a href="dashboard.jsp"></a>
+            <a href="index.jsp"></a>
         </nav>
     </header>
 
@@ -192,7 +222,7 @@
         <!-- Billing number entry form -->
         <form action="BillingServlet" method="post">
             <label for="bookingNumber">Enter Booking Number:</label>
-            <input type="text" id="bookingNumber" name="bookingNumber" placeholder="e.g., E12345" required>
+            <input type="text" id="bookingNumber" name="bookingNumber" placeholder="e.g., BKN146045" required>
             <br/>
             <button type="submit">Get Billing Details</button>
         </form>
@@ -201,7 +231,7 @@
         <% if (billingInfo != null) { %>
             <div class="billing-details">
                 <p><span class="label">Booking Number:</span> <%= billingInfo.getBookingNumber() %></p>
-                <p><span class="label">Customer Address:</span> <%= billingInfo.getCustomerAddress() %></p>
+                <p><span class="label">Customer Address:</span> <%= billingInfo.getpickupLocation() %></p>
                 <p><span class="label">Destination:</span> <%= billingInfo.getDestination() %></p>
                 <p><span class="label">Distance:</span> <%= String.format("%.2f", billingInfo.getDistance()) %> miles</p>
                 <p><span class="label">Total Bill:</span> $<%= String.format("%.2f", billingInfo.getTotalAmount()) %></p>

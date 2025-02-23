@@ -156,6 +156,7 @@
                 <a href="booking.jsp">New Booking</a>
                 <a href="BookingServlet?action=list">View Bookings</a>
                 <a href="register.jsp">Registration</a>
+                <a href="viewEdt.jsp">View</a>
                 <a href="billing.jsp">Billing</a>
                 <a href="help.jsp">Help</a>
             </div>

@@ -36,8 +36,7 @@ public class CustomerDAO {
      * @throws SQLException if a database access error occurs.
      */
     public boolean addCustomer(Customer customer) throws SQLException {
-        String sql = "INSERT INTO customers (registrationNumber, name, address, nic, telephone) "
-                   + "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO customers (registrationNumber, name, address, nic, telephone) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -76,7 +75,6 @@ public class CustomerDAO {
                     String nic = rs.getString("nic");
                     String telephone = rs.getString("telephone");
 
-                    // Build the Customer object using the Builder pattern
                     customer = new Customer.Builder(regNumber)
                             .name(name)
                             .address(address)
@@ -88,8 +86,86 @@ public class CustomerDAO {
         }
         return customer;
     }
-        /**
+
+    /**
+     * Retrieves a customer from the database based on NIC.
+     *
+     * @param nic the NIC number of the customer.
+     * @return the Customer object if found; otherwise, null.
+     * @throws SQLException if a database access error occurs.
+     */
+    public Customer getCustomerByNic(String nic) throws SQLException {
+        String sql = "SELECT registrationNumber, name, address, nic, telephone FROM customers WHERE nic = ?";
+        Customer customer = null;
+
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nic);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String regNumber = rs.getString("registrationNumber");
+                    String name = rs.getString("name");
+                    String address = rs.getString("address");
+                    String retrievedNic = rs.getString("nic");
+                    String telephone = rs.getString("telephone");
+
+                    customer = new Customer.Builder(regNumber)
+                            .name(name)
+                            .address(address)
+                            .nic(retrievedNic)
+                            .telephone(telephone)
+                            .build();
+                }
+            }
+        }
+        return customer;
+    }
+
+    /**
+     * Retrieves a customer from the database based on either the registration number or NIC.
+     *
+     * @param input the registration number (e.g., "CUS_88021") or NIC (e.g., "78454112").
+     * @return the Customer object if found; otherwise, null.
+     * @throws SQLException if a database access error occurs.
+     */
+    public Customer getCustomerByRegOrNic(String input) throws SQLException {
+        String sql = "SELECT registrationNumber, name, address, nic, telephone FROM customers " +
+                     "WHERE registrationNumber = ? OR nic = ? LIMIT 1";
+        Customer customer = null;
+
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, input);
+            stmt.setString(2, input);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String regNumber = rs.getString("registrationNumber");
+                    String name = rs.getString("name");
+                    String address = rs.getString("address");
+                    String retrievedNic = rs.getString("nic");
+                    String telephone = rs.getString("telephone");
+
+                    customer = new Customer.Builder(regNumber)
+                            .name(name)
+                            .address(address)
+                            .nic(retrievedNic)
+                            .telephone(telephone)
+                            .build();
+                }
+            }
+        }
+        return customer;
+    }
+
+    /**
      * Updates an existing customer record.
+     *
+     * @param customer the Customer object with updated details.
+     * @return true if the update was successful; false otherwise.
+     * @throws Exception if a database access error occurs.
      */
     public boolean updateCustomer(Customer customer) throws Exception {
         String sql = "UPDATE customers SET name = ?, address = ?, nic = ?, telephone = ? WHERE registrationNumber = ?";
@@ -106,5 +182,4 @@ public class CustomerDAO {
             return rowsUpdated > 0;
         }
     }
-
 }

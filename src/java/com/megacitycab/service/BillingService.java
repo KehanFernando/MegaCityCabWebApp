@@ -41,14 +41,14 @@ public class BillingService {
      */
     public static class BillingInfo {
         private String bookingNumber;
-        private String customerAddress;
+        private String pickupLocation;
         private String destination;
         private double distance; // in miles
         private double totalAmount;
 
-        public BillingInfo(String bookingNumber, String customerAddress, String destination, double distance, double totalAmount) {
+        public BillingInfo(String bookingNumber, String pickupLocation, String destination, double distance, double totalAmount) {
             this.bookingNumber = bookingNumber;
-            this.customerAddress = customerAddress;
+            this.pickupLocation = pickupLocation;
             this.destination = destination;
             this.distance = distance;
             this.totalAmount = totalAmount;
@@ -58,8 +58,8 @@ public class BillingService {
             return bookingNumber;
         }
 
-        public String getCustomerAddress() {
-            return customerAddress;
+        public String getpickupLocation() {
+            return pickupLocation;
         }
 
         public String getDestination() {
@@ -87,7 +87,8 @@ public class BillingService {
      * @return an instance of BillingInfo containing detailed billing information, or null if not found.
      */
     public BillingInfo calculateBill(String bookingNumber) {
-        String sql = "SELECT bookingNumber, customerAddress, destination FROM bookings WHERE bookingNumber = ?";
+        // Use the booking number as is (e.g., "BKN146045")
+        String sql = "SELECT bookingNumber, pickupLocation, destination FROM bookings WHERE bookingNumber = ?";
         BillingInfo billingInfo = null;
 
         try (Connection conn = DBConnectionManager.getConnection();
@@ -97,11 +98,12 @@ public class BillingService {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    String customerAddress = rs.getString("customerAddress");
+                    String dbBookingNumber = rs.getString("bookingNumber");
+                    String pickupLocation = rs.getString("pickupLocation");
                     String destination = rs.getString("destination");
 
                     // Retrieve the distance (in miles) using a dummy integration method.
-                    double distance = getDistance(customerAddress, destination);
+                    double distance = getDistance(pickupLocation, destination);
 
                     // Billing parameters.
                     final double baseFare = 50.0;
@@ -111,7 +113,7 @@ public class BillingService {
                     double amountBeforeTax = baseFare + (distance * perMileRate);
                     double totalAmount = amountBeforeTax + (amountBeforeTax * taxRate);
 
-                    billingInfo = new BillingInfo(bookingNumber, customerAddress, destination, distance, totalAmount);
+                    billingInfo = new BillingInfo(dbBookingNumber, pickupLocation, destination, distance, totalAmount);
                 } else {
                     System.err.println("Booking not found for booking number: " + bookingNumber);
                 }
@@ -136,7 +138,6 @@ public class BillingService {
      */
     private double getDistance(String origin, String destination) {
         // TODO: Replace with real Google Maps API integration to compute distance.
-        // For now, we simulate by returning a fixed value.
         return 10.0;
     }
 }
