@@ -37,4 +37,13 @@
             30
         </session-timeout>
     </session-config>
+    <servlet>
+    <servlet-name>VehicleServlet</servlet-name>
+    <servlet-class>com.megacitycab.controller.VehicleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VehicleServlet</servlet-name>
+        <url-pattern>/VehicleServlet</url-pattern>
+    </servlet-mapping>
+
 </web-app>

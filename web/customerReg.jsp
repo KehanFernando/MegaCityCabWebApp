@@ -234,10 +234,10 @@
             <label for="address">Address</label>
             <input type="text" id="address" name="address">
             
-            <label for="nic">NIC</label>
+            <label for="nic">NIC Number</label>
             <input type="text" id="nic" name="nic">
             
-            <label for="telephone">Telephone</label>
+            <label for="telephone">Contact Number</label>
             <input type="text" id="telephone" name="telephone">
             
             <button type="submit">Register</button>

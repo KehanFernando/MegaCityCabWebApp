@@ -225,8 +225,13 @@
             <p><span class="label">Booking Number:</span> <%= booking.getBookingNumber() %></p>
             <p><span class="label">Customer Registration Number/NIC:</span> <%= booking.getCustomerRegNo() %></p>
             <p><span class="label">Customer Name:</span> <%= booking.getCustomerName() %></p>
-            <p><span class="label">Pickup Location:</span> <%= booking.getCustomerAddress() %></p>
             <p><span class="label">Contact Number:</span> <%= booking.getTelephoneNumber() %></p>
+            <p><span class="label">Vehicle Type:</span> <%= booking.getVehicleType() %></p>
+            <p><span class="label">Assigned Vehicle Registration Number:</span> <%= booking.getVehicleRegId() %></p>
+            <p><span class="label">Vehicle Brand:</span> <%= booking.getVbrand() %></p>
+            <p><span class="label">Vehicle Model:</span> <%= booking.getVmodel() %></p>
+            <p><span class="label">Vehicle Seating Capacity:</span> <%= booking.getVseating() %></p>
+            <p><span class="label">Pickup Location:</span> <%= booking.getCustomerAddress() %></p>
             <p><span class="label">Destination:</span> <%= booking.getDestination() %></p>
             <p>
             <span class="label">Booking Date:</span>

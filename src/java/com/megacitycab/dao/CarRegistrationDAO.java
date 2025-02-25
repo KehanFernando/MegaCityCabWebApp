@@ -5,10 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class CarRegistrationDAO {
 
@@ -39,7 +35,8 @@ public class CarRegistrationDAO {
         }
         return rowsAffected;
     }
-        /**
+    
+    /**
      * Retrieves a vehicle from the database based on vehicleRegId.
      */
     public Car getCar(String vehicleRegId) throws Exception {
@@ -84,5 +81,70 @@ public class CarRegistrationDAO {
             return rowsUpdated > 0;
         }
     }
+    
+    /**
+     * Retrieves an available vehicle for the given vehicle type.
+     *
+     * @param vehicleType The type of the vehicle.
+     * @return A Car object if found, otherwise null.
+     * @throws Exception
+     */
+    public Car getAvailableVehicle(String vehicleType) throws Exception {
+        String sql = "SELECT vehicleType, vehicleRegId, licensePlate, model, brand, color, seatingCapacity "
+                   + "FROM vehicles WHERE vehicleType = ? LIMIT 1";
+        Car car = null;
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             
+            stmt.setString(1, vehicleType);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    car = new Car.Builder(rs.getString("vehicleType"), rs.getString("vehicleRegId"))
+                            .licensePlate(rs.getString("licensePlate"))
+                            .model(rs.getString("model"))
+                            .brand(rs.getString("brand"))
+                            .color(rs.getString("color"))
+                            .seatingCapacity(rs.getInt("seatingCapacity"))
+                            .build();
+                }
+            }
+        }
+        return car;
+    }
+    
+    /**
+     * Retrieves an available vehicle for the given vehicle type that is not already booked.
+     * The query excludes vehicles whose vehicleRegId exists in the bookings table.
+     *
+     * @param vehicleType The type of the vehicle.
+     * @return A Car object if found, otherwise null.
+     * @throws Exception
+     */
+    public Car getAvailableNotBookedVehicle(String vehicleType) throws Exception {
+        String sql = "SELECT vehicleType, vehicleRegId, licensePlate, model, brand, color, seatingCapacity " +
+                     "FROM vehicles " +
+                     "WHERE vehicleType = ? " +
+                     "AND vehicleRegId NOT IN (SELECT vehicleRegId FROM bookings WHERE vehicleType = ?) " +
+                     "LIMIT 1";
+        Car car = null;
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            stmt.setString(1, vehicleType);
+            stmt.setString(2, vehicleType);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    car = new Car.Builder(rs.getString("vehicleType"), rs.getString("vehicleRegId"))
+                            .licensePlate(rs.getString("licensePlate"))
+                            .model(rs.getString("model"))
+                            .brand(rs.getString("brand"))
+                            .color(rs.getString("color"))
+                            .seatingCapacity(rs.getInt("seatingCapacity"))
+                            .build();
+                }
+            }
+        }
+        return car;
+    }
 }

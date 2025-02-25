@@ -4,10 +4,10 @@ import java.util.Objects;
 
 /**
  * Represents a vehicle in the Mega City Cab system.
- * <p>
+ * 
  * This class is designed using the Builder pattern to enforce immutability and
  * provide a clear, flexible construction process for Vehicle objects.
- * <p>
+ * 
  * Adheres to the Single Responsibility Principle by solely representing vehicle data.
  */
 public class Car {
@@ -92,7 +92,7 @@ public class Car {
 
     /**
      * Builder class for constructing Car instances.
-     * <p>
+     * 
      * This follows the Builder design pattern, providing a clear and flexible
      * approach to constructing immutable Car objects.
      */

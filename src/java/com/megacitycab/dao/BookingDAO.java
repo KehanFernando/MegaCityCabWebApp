@@ -5,14 +5,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * DAO for handling booking-related operations in the database.
- * Ensure that your DB table 'bookings' has a column named 'customerRegNo'.
+ * Assumes the table "bookings" has the following columns:
+ * bookingNumber, customerName, pickupLocation, telephoneNumber, destination, bookingDate, customerRegNo,
+ * vehicleType, vehicleRegId, Vbrand, Vmodel, Vseating
  */
 public class BookingDAO {
     private static BookingDAO instance;
@@ -26,9 +27,16 @@ public class BookingDAO {
         return instance;
     }
 
+    /**
+     * Inserts a booking into the database.
+     *
+     * @param booking The booking to add.
+     * @return true if insertion was successful.
+     * @throws SQLException If an SQL error occurs.
+     */
     public boolean addBooking(Booking booking) throws SQLException {
-        String sql = "INSERT INTO bookings (bookingNumber, customerName, pickupLocation, telephoneNumber, destination, bookingDate, customerRegNo) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO bookings (bookingNumber, customerName, pickupLocation, telephoneNumber, destination, bookingDate, customerRegNo, vehicleType, vehicleRegId, Vbrand, Vmodel, Vseating) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -40,9 +48,14 @@ public class BookingDAO {
             Date bookingDate = booking.getBookingDate();
             stmt.setDate(6, new java.sql.Date(bookingDate != null ? bookingDate.getTime() : System.currentTimeMillis()));
             stmt.setString(7, booking.getCustomerRegNo());
+            stmt.setString(8, booking.getVehicleType());
+            stmt.setString(9, booking.getVehicleRegId());
+            stmt.setString(10, booking.getVbrand());
+            stmt.setString(11, booking.getVmodel());
+            stmt.setString(12, booking.getVseating());
 
             int rowsInserted = stmt.executeUpdate();
-            if(rowsInserted > 0) {
+            if (rowsInserted > 0) {
                 System.out.println("Inserted booking: " + booking);
             } else {
                 System.err.println("No rows inserted for booking: " + booking);
@@ -58,8 +71,15 @@ public class BookingDAO {
         }
     }
 
+    /**
+     * Retrieves a booking from the database using its booking number.
+     *
+     * @param bookingNumber The unique booking number.
+     * @return The Booking object if found, otherwise null.
+     * @throws SQLException If an SQL error occurs.
+     */
     public Booking getBooking(String bookingNumber) throws SQLException {
-        String sql = "SELECT bookingNumber, customerName, pickupLocation, telephoneNumber, destination, customerRegNo, bookingDate "
+        String sql = "SELECT bookingNumber, customerName, pickupLocation, telephoneNumber, destination, customerRegNo, bookingDate, vehicleType, vehicleRegId, Vbrand, Vmodel, Vseating "
                    + "FROM bookings WHERE bookingNumber = ?";
         Booking booking = null;
 
@@ -77,23 +97,39 @@ public class BookingDAO {
                     java.sql.Date sqlDate = rs.getDate("bookingDate");
                     Date bookingDate = sqlDate != null ? new Date(sqlDate.getTime()) : null;
                     String customerRegNo = rs.getString("customerRegNo");
+                    String vehicleType = rs.getString("vehicleType");
+                    String vehicleRegId = rs.getString("vehicleRegId");
+                    String vbrand = rs.getString("Vbrand");
+                    String vmodel = rs.getString("Vmodel");
+                    String vseating = rs.getString("Vseating");
 
                     booking = new Booking.Builder(bNumber)
-                                .customerName(customerName)
-                                .customerAddress(customerAddress)
-                                .telephoneNumber(telephoneNumber)
-                                .destination(destination)
-                                .bookingDate(bookingDate)
-                                .customerRegNo(customerRegNo)
-                                .build();
+                            .customerName(customerName)
+                            .customerAddress(customerAddress)
+                            .telephoneNumber(telephoneNumber)
+                            .destination(destination)
+                            .bookingDate(bookingDate)
+                            .customerRegNo(customerRegNo)
+                            .vehicleType(vehicleType)
+                            .vehicleRegId(vehicleRegId)
+                            .vbrand(vbrand)
+                            .vmodel(vmodel)
+                            .vseating(vseating)
+                            .build();
                 }
             }
         }
         return booking;
     }
 
+    /**
+     * Retrieves all bookings from the database.
+     *
+     * @return A list of Booking objects.
+     * @throws SQLException If an SQL error occurs.
+     */
     public List<Booking> getAllBookings() throws SQLException {
-        String sql = "SELECT bookingNumber, customerName, pickupLocation, telephoneNumber, destination, customerRegNo, bookingDate FROM bookings";
+        String sql = "SELECT bookingNumber, customerName, pickupLocation, telephoneNumber, destination, customerRegNo, bookingDate, vehicleType, vehicleRegId, Vbrand, Vmodel, Vseating FROM bookings";
         List<Booking> bookings = new ArrayList<>();
 
         try (Connection conn = DBConnectionManager.getConnection();
@@ -106,9 +142,14 @@ public class BookingDAO {
                 String customerAddress = rs.getString("pickupLocation");
                 String telephoneNumber = rs.getString("telephoneNumber");
                 String destination = rs.getString("destination");
-                Timestamp ts = rs.getTimestamp("bookingDate");
+                java.sql.Timestamp ts = rs.getTimestamp("bookingDate");
                 Date bookingDate = ts != null ? new Date(ts.getTime()) : null;
                 String customerRegNo = rs.getString("customerRegNo");
+                String vehicleType = rs.getString("vehicleType");
+                String vehicleRegId = rs.getString("vehicleRegId");
+                String vbrand = rs.getString("Vbrand");
+                String vmodel = rs.getString("Vmodel");
+                String vseating = rs.getString("Vseating");
 
                 Booking booking = new Booking.Builder(bNumber)
                         .customerName(customerName)
@@ -117,6 +158,11 @@ public class BookingDAO {
                         .destination(destination)
                         .bookingDate(bookingDate)
                         .customerRegNo(customerRegNo)
+                        .vehicleType(vehicleType)
+                        .vehicleRegId(vehicleRegId)
+                        .vbrand(vbrand)
+                        .vmodel(vmodel)
+                        .vseating(vseating)
                         .build();
                 bookings.add(booking);
             }

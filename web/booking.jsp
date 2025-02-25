@@ -56,59 +56,59 @@
         }
         /* Style for the Dashboard link with icon */
         header.navbar .nav-links a[href="dashboard.jsp"] {
-          position: relative;
-          padding-left: 30px; /* space for the icon */
-          background: url('https://img.icons8.com/?size=100&id=S5D5w5vFLhYp&format=png&color=000000') no-repeat left center;
-          background-size: 20px 20px;
+            position: relative;
+            padding-left: 30px; /* space for the icon */
+            background: url('https://img.icons8.com/?size=100&id=S5D5w5vFLhYp&format=png&color=000000') no-repeat left center;
+            background-size: 20px 20px;
         }
         /* Tooltip styling on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
-          content: 'Dashboard';
-          position: absolute;
-          bottom: -30px; /* position tooltip below the link */
-          left: 50%;
-          transform: translateX(-50%);
-          background: #333;
-          color: #fff;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 0.85rem;
-          white-space: nowrap;
-          opacity: 0;
-          transition: opacity 0.3s;
-          pointer-events: none;
+            content: 'Dashboard';
+            position: absolute;
+            bottom: -30px; /* position tooltip below the link */
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
         /* Make tooltip visible on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
-          opacity: 1;
+            opacity: 1;
         }
         /* Style for the Dashboard link with icon */
         header.navbar .nav-links a[href="index.jsp"] {
-          position: relative;
-          padding-left: 30px; /* space for the icon */
-          background: url('https://img.icons8.com/?size=100&id=111473&format=png&color=000000') no-repeat left center;
-          background-size: 20px 20px;
+            position: relative;
+            padding-left: 30px; /* space for the icon */
+            background: url('https://img.icons8.com/?size=100&id=111473&format=png&color=000000') no-repeat left center;
+            background-size: 20px 20px;
         }
         /* Tooltip styling on hover */
         header.navbar .nav-links a[href="index.jsp"]:hover::after {
-          content: 'Dashboard';
-          position: absolute;
-          bottom: -30px; /* position tooltip below the link */
-          left: 50%;
-          transform: translateX(-50%);
-          background: #333;
-          color: #fff;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 0.85rem;
-          white-space: nowrap;
-          opacity: 0;
-          transition: opacity 0.3s;
-          pointer-events: none;
+            content: 'Dashboard';
+            position: absolute;
+            bottom: -30px; /* position tooltip below the link */
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
         /* Make tooltip visible on hover */
         header.navbar .nav-links a[href="index.jsp"]:hover::after {
-          opacity: 1;
+            opacity: 1;
         }
         /* Booking container styling */
         .booking-container {
@@ -135,7 +135,8 @@
             color: #555;
         }
         .booking-container input[type="text"],
-        .booking-container input[type="date"] {
+        .booking-container input[type="date"],
+        .booking-container select {
             padding: 0.75rem;
             margin-bottom: 1rem;
             border: 1px solid #ccc;
@@ -181,7 +182,6 @@
             if (regNo.trim() === "") {
                 return;
             }
-            // Use the correct servlet mapping: CustomerRegistrationServlet
             var url = "<%= request.getContextPath() %>/CustomerRegistrationServlet?action=getCustomer&customerRegNo=" + encodeURIComponent(regNo);
             fetch(url)
                 .then(response => {
@@ -205,6 +205,56 @@
                     alert("Error fetching customer details: " + error.message);
                 });
         }
+
+        // Function to fetch vehicle details based on the selected Vehicle Type.
+        // This function now calls a servlet that checks for vehicles not already booked.
+        function fetchVehicleDetails() {
+            var vehicleType = document.getElementById("vehicleType").value;
+            if (vehicleType.trim() === "") {
+                document.getElementById("vehicleRegId").value = "";
+                document.getElementById("brand").value = "";
+                document.getElementById("model").value = "";
+                document.getElementById("seatingCapacity").value = "";
+                return;
+            }
+            // Calls VehicleServlet with an action to get an available and not-yet-booked vehicle.
+            var url = "<%= request.getContextPath() %>/VehicleServlet?action=getAvailableNotBookedVehicle&vehicleType=" + encodeURIComponent(vehicleType);
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("HTTP error, status = " + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // If the response includes a message indicating all vehicles are booked, show an alert.
+                    if (data && data.message && data.message === "All vehicles are booked") {
+                        alert("All vehicles are booked for the selected type.");
+                        document.getElementById("vehicleRegId").value = "";
+                        document.getElementById("brand").value = "";
+                        document.getElementById("model").value = "";
+                        document.getElementById("seatingCapacity").value = "";
+                    } else if (data && data.vehicleRegId) {
+                        // Populate the fields with the available vehicle details.
+                        document.getElementById("vehicleRegId").value = data.vehicleRegId;
+                        document.getElementById("brand").value = data.brand;
+                        document.getElementById("model").value = data.model;
+                        document.getElementById("seatingCapacity").value = data.seatingCapacity;
+                    } else {
+                        // If no vehicle was returned, clear the fields and alert.
+                        document.getElementById("vehicleRegId").value = "";
+                        document.getElementById("brand").value = "";
+                        document.getElementById("model").value = "";
+                        document.getElementById("seatingCapacity").value = "";
+                        alert("No available vehicle found for the selected type.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching vehicle details:", error);
+                    alert("Error fetching vehicle details: " + error.message);
+                });
+        }
+        
 
         window.onload = function() {
             generateBookingNumber();
@@ -245,7 +295,7 @@
 
             <!-- Customer Registration Number / NIC -->
             <label for="customerRegNo">Customer Registration Number / NIC</label>
-            <input type="text" id="customerRegNo" name="customerRegNo" placeholder="Enter Registration Number or NIC" required onblur="fetchCustomerDetails()">
+            <input type="text" id="customerRegNo" name="customerRegNo" placeholder="Registration Number or NIC" required onblur="fetchCustomerDetails()">
 
             <!-- Auto-filled Customer Name -->
             <label for="customerName">Customer Name</label>
@@ -253,7 +303,29 @@
 
             <!-- Auto-filled Telephone Number -->
             <label for="telephoneNumber">Contact Number</label>
-            <input type="text" id="telephoneNumber" name="telephoneNumber" placeholder="Telephone Number" readonly>
+            <input type="text" id="telephoneNumber" name="telephoneNumber" placeholder="Contact Number" readonly>
+
+            <!-- Vehicle Details Section -->
+            <label for="vehicleType">Vehicle Type</label>
+            <select id="vehicleType" name="vehicleType" required onchange="fetchVehicleDetails()">
+                <option value="">Select Vehicle Type</option>
+                <option value="Car">Car</option>
+                <option value="SUV">SUV</option>
+                <option value="Van">Van</option>
+                <option value="Bus">Bus</option>
+            </select>
+
+            <label for="vehicleRegId">Vehicle Registration ID</label>
+            <input type="text" id="vehicleRegId" name="vehicleRegId" placeholder="Vehicle Registration ID" readonly>
+
+            <label for="brand">Vehicle Brand</label>
+            <input type="text" id="brand" name="brand" placeholder="Brand" readonly>
+
+            <label for="model">Vehicle Model</label>
+            <input type="text" id="model" name="model" placeholder="Model" readonly>
+
+            <label for="seatingCapacity">Vehicle Seating Capacity</label>
+            <input type="text" id="seatingCapacity" name="seatingCapacity" placeholder="Seating Capacity" readonly>
 
             <!-- Pickup Location -->
             <label for="pickupLocation">Pickup Location</label>
@@ -267,7 +339,7 @@
             <label for="bookingDate">Booking Date</label>
             <input type="date" id="bookingDate" name="bookingDate">
 
-            <button type="submit">Submit Booking</button>
+            <button type="submit">Reserve a Booking</button>
         </form>
     </div>
 </body>

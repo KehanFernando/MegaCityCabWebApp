@@ -58,6 +58,13 @@ public class BookingServlet extends HttpServlet {
         String destination = request.getParameter("destination");
         String bookingDateStr = request.getParameter("bookingDate");
         String customerRegNo = request.getParameter("customerRegNo");
+        
+         // New vehicle fields from the form:
+        String vehicleType = request.getParameter("vehicleType");
+        String vehicleRegId = request.getParameter("vehicleRegId");
+        String vbrand = request.getParameter("brand");
+        String vmodel = request.getParameter("model");
+        String vseating = request.getParameter("seatingCapacity");
 
         // Pre-insert validation (ensure required fields are provided)
         if (customerName == null || customerName.trim().isEmpty() ||
@@ -86,6 +93,11 @@ public class BookingServlet extends HttpServlet {
                 .destination(destination)
                 .bookingDate(bookingDate)
                 .customerRegNo(customerRegNo)
+                .vehicleType(vehicleType)
+                .vehicleRegId(vehicleRegId)
+                .vbrand(vbrand)
+                .vmodel(vmodel)
+                .vseating(vseating)
                 .build();
 
         boolean isAdded = bookingService.addBooking(booking);

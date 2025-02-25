@@ -263,19 +263,19 @@
             <input type="text" id="vehicleRegId" name="vehicleRegId" readonly placeholder="Auto-generated ID">
 
             <!-- Other Fields -->
-            <label for="licensePlate">License Plate</label>
+            <label for="licensePlate">Vehicle License Plate Number</label>
             <input type="text" id="licensePlate" name="licensePlate" placeholder="Enter License Plate">
             
-            <label for="brand">Brand</label>
+            <label for="brand">Vehicle Brand</label>
             <input type="text" id="brand" name="brand" placeholder="Enter Vehicle Brand">
             
-            <label for="model">Model</label>
+            <label for="model">Vehicle Model</label>
             <input type="text" id="model" name="model" placeholder="Enter Vehicle Model">
             
-            <label for="color">Color</label>
+            <label for="color">Vehicle Color</label>
             <input type="text" id="color" name="color" placeholder="Enter Vehicle Color">
             
-            <label for="seatingCapacity">Seating Capacity</label>
+            <label for="seatingCapacity">Vehicle Seating Capacity</label>
             <input type="number" id="seatingCapacity" name="seatingCapacity" placeholder="Enter Seating Capacity" min="1">
             
             <button type="submit">Register Vehicle</button>
