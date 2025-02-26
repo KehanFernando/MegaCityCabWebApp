@@ -10,9 +10,9 @@ import java.sql.SQLException;
  * Provides billing services for the Mega City Cab system.
  * <p>
  * This service is implemented as a Singleton to ensure a single point of billing calculation.
- * It retrieves booking details (including customer address and destination) from a MySQL database,
- * calculates the distance (using a dummy method that could be replaced by a Google Maps integration),
- * and then computes the total bill using a base fare, per-mile rate, and tax.
+ * It retrieves booking details (including customer address and destination) from a MySQL database.
+ * It can either return basic booking info (distance=0) or compute a full bill if a manual
+ * distance is provided.
  * </p>
  */
 public class BillingService {
@@ -44,16 +44,23 @@ public class BillingService {
         private String pickupLocation;
         private String destination;
         private double distance; // in miles
+        private double baseFare;
+        private double distanceCost;
+        private double taxAmount;
         private double totalAmount;
 
-        public BillingInfo(String bookingNumber, String pickupLocation, String destination, double distance, double totalAmount) {
+        public BillingInfo(String bookingNumber, String pickupLocation, String destination) {
             this.bookingNumber = bookingNumber;
             this.pickupLocation = pickupLocation;
             this.destination = destination;
-            this.distance = distance;
-            this.totalAmount = totalAmount;
+            this.distance = 0;
+            this.baseFare = 0;
+            this.distanceCost = 0;
+            this.taxAmount = 0;
+            this.totalAmount = 0;
         }
 
+        // Getters and setters
         public String getBookingNumber() {
             return bookingNumber;
         }
@@ -70,24 +77,51 @@ public class BillingService {
             return distance;
         }
 
+        public void setDistance(double distance) {
+            this.distance = distance;
+        }
+
+        public double getBaseFare() {
+            return baseFare;
+        }
+
+        public void setBaseFare(double baseFare) {
+            this.baseFare = baseFare;
+        }
+
+        public double getDistanceCost() {
+            return distanceCost;
+        }
+
+        public void setDistanceCost(double distanceCost) {
+            this.distanceCost = distanceCost;
+        }
+
+        public double getTaxAmount() {
+            return taxAmount;
+        }
+
+        public void setTaxAmount(double taxAmount) {
+            this.taxAmount = taxAmount;
+        }
+
         public double getTotalAmount() {
             return totalAmount;
+        }
+
+        public void setTotalAmount(double totalAmount) {
+            this.totalAmount = totalAmount;
         }
     }
 
     /**
-     * Calculates the billing information for a given booking number.
-     * <p>
-     * The method retrieves the booking record (customer address and destination) from the database,
-     * calculates the distance between the two locations using a dummy implementation (which could be
-     * replaced by a call to the Google Maps API), and then computes the total bill.
-     * </p>
+     * Returns a BillingInfo object with only bookingNumber, pickupLocation, destination
+     * (distance, cost, etc. remain zero). This is for preview before distance is known.
      *
-     * @param bookingNumber the unique booking identifier.
-     * @return an instance of BillingInfo containing detailed billing information, or null if not found.
+     * @param bookingNumber the booking number to look up
+     * @return a BillingInfo object, or null if not found
      */
-    public BillingInfo calculateBill(String bookingNumber) {
-        // Use the booking number as is (e.g., "BKN146045")
+    public BillingInfo getBookingDetails(String bookingNumber) {
         String sql = "SELECT bookingNumber, pickupLocation, destination FROM bookings WHERE bookingNumber = ?";
         BillingInfo billingInfo = null;
 
@@ -102,18 +136,57 @@ public class BillingService {
                     String pickupLocation = rs.getString("pickupLocation");
                     String destination = rs.getString("destination");
 
-                    // Retrieve the distance (in miles) using a dummy integration method.
-                    double distance = getDistance(pickupLocation, destination);
+                    // Return basic booking details (distance = 0, cost = 0, etc.)
+                    billingInfo = new BillingInfo(dbBookingNumber, pickupLocation, destination);
+                }
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error while retrieving booking details: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        return billingInfo;
+    }
 
-                    // Billing parameters.
+    /**
+     * Calculates the billing information using the manually provided distance.
+     *
+     * @param bookingNumber  the unique booking identifier.
+     * @param manualDistance the manually provided distance in miles.
+     * @return a fully populated BillingInfo object, or null if the booking is not found
+     */
+    public BillingInfo calculateBill(String bookingNumber, double manualDistance) {
+        String sql = "SELECT bookingNumber, pickupLocation, destination FROM bookings WHERE bookingNumber = ?";
+        BillingInfo billingInfo = null;
+
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, bookingNumber);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String dbBookingNumber = rs.getString("bookingNumber");
+                    String pickupLocation = rs.getString("pickupLocation");
+                    String destination = rs.getString("destination");
+
+                    billingInfo = new BillingInfo(dbBookingNumber, pickupLocation, destination);
+                    billingInfo.setDistance(manualDistance);
+
+                    // Billing parameters
                     final double baseFare = 50.0;
                     final double perMileRate = 2.0;
-                    final double taxRate = 0.10; // 10% tax
+                    final double taxRate = 0.10; // 10%
 
-                    double amountBeforeTax = baseFare + (distance * perMileRate);
-                    double totalAmount = amountBeforeTax + (amountBeforeTax * taxRate);
+                    double distanceCost = manualDistance * perMileRate;
+                    double amountBeforeTax = baseFare + distanceCost;
+                    double taxAmount = amountBeforeTax * taxRate;
+                    double totalAmount = amountBeforeTax + taxAmount;
 
-                    billingInfo = new BillingInfo(dbBookingNumber, pickupLocation, destination, distance, totalAmount);
+                    // Populate fields
+                    billingInfo.setBaseFare(baseFare);
+                    billingInfo.setDistanceCost(distanceCost);
+                    billingInfo.setTaxAmount(taxAmount);
+                    billingInfo.setTotalAmount(totalAmount);
                 } else {
                     System.err.println("Booking not found for booking number: " + bookingNumber);
                 }
@@ -123,21 +196,5 @@ public class BillingService {
             ex.printStackTrace();
         }
         return billingInfo;
-    }
-
-    /**
-     * Dummy implementation for calculating distance between two addresses.
-     * <p>
-     * In a real-world scenario, this method would integrate with the Google Maps API (or similar)
-     * to retrieve the actual mileage/distance between the origin and destination.
-     * </p>
-     *
-     * @param origin      the starting address.
-     * @param destination the destination address.
-     * @return the distance in miles.
-     */
-    private double getDistance(String origin, String destination) {
-        // TODO: Replace with real Google Maps API integration to compute distance.
-        return 10.0;
     }
 }

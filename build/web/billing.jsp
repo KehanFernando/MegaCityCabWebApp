@@ -176,6 +176,16 @@
         form button:hover {
             background-color: #444;
         }
+        .calculation-breakdown {
+            text-align: left;
+            margin: 1.5rem 0;
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.6;
+        }
+        .calculation-breakdown p span {
+            font-weight: bold;
+        }
         button.print-button {
             padding: 0.5rem 1rem;
             background-color: #28a745;
@@ -187,6 +197,25 @@
         }
         button.print-button:hover {
             background-color: #218838;
+        }
+
+        /* Hide unwanted elements on print */
+        @media print {
+            /* Hide navigation, background, and print button */
+            header.navbar, .back-link, button.print-button {
+                display: none !important;
+            }
+            body {
+                background: #fff !important;
+                margin: 0;
+                padding: 0;
+            }
+            .billing-container {
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -219,25 +248,50 @@
             <div class="error-message"><%= errorMessage %></div>
         <% } %>
 
-        <!-- Billing number entry form -->
-        <form action="BillingServlet" method="post">
-            <label for="bookingNumber">Enter Booking Number:</label>
-            <input type="text" id="bookingNumber" name="bookingNumber" placeholder="e.g., BKN146045" required>
-            <br/>
-            <button type="submit">Get Billing Details</button>
-        </form>
-
-        <!-- Display billing details if available -->
-        <% if (billingInfo != null) { %>
+        <!-- If no billing info yet, show booking number form -->
+        <% if (billingInfo == null) { %>
+            <form action="BillingServlet" method="post">
+                <label for="bookingNumber">Enter Booking Number:</label>
+                <input type="text" id="bookingNumber" name="bookingNumber" placeholder="e.g., BKN146045" required>
+                <br/>
+                <button type="submit">Get Booking Details</button>
+            </form>
+        <% } else { 
+            // We have at least the booking details
+        %>
             <div class="billing-details">
                 <p><span class="label">Booking Number:</span> <%= billingInfo.getBookingNumber() %></p>
-                <p><span class="label">Customer Address:</span> <%= billingInfo.getpickupLocation() %></p>
+                <p><span class="label">Customer Pickup Location:</span> <%= billingInfo.getpickupLocation() %></p>
                 <p><span class="label">Destination:</span> <%= billingInfo.getDestination() %></p>
-                <p><span class="label">Distance:</span> <%= String.format("%.2f", billingInfo.getDistance()) %> miles</p>
-                <p><span class="label">Total Bill:</span> $<%= String.format("%.2f", billingInfo.getTotalAmount()) %></p>
             </div>
-            <button class="print-button" onclick="window.print()">Print Bill</button>
+
+            <!-- If distance is 0, it means user hasn't updated it yet. Show the form to update distance. -->
+            <% if (billingInfo.getDistance() == 0) { %>
+                <h3>Update Distance</h3>
+                <form action="BillingServlet" method="post">
+                    <input type="hidden" name="bookingNumber" value="<%= billingInfo.getBookingNumber() %>">
+                    <label for="manualDistance">Enter Distance (miles):</label>
+                    <input type="text" id="manualDistance" name="manualDistance" placeholder="e.g., 12.5" required>
+                    <br/>
+                    <button type="submit">Update Bill</button>
+                </form>
+            <% } else { 
+                // Distance > 0, show full calculation breakdown
+            %>
+                <div class="calculation-breakdown">
+                    <p><span>Distance:</span> <%= String.format("%.2f", billingInfo.getDistance()) %> miles</p>
+                    <p><span>Base Fare:</span> $<%= String.format("%.2f", billingInfo.getBaseFare()) %></p>
+                    <p><span>Distance Cost:</span> $<%= String.format("%.2f", billingInfo.getDistanceCost()) %></p>
+                    <p><span>Tax (10%):</span> $<%= String.format("%.2f", billingInfo.getTaxAmount()) %></p>
+                    <hr>
+                    <p><span>Total Bill:</span> $<%= String.format("%.2f", billingInfo.getTotalAmount()) %></p>
+                </div>
+
+                <!-- Print button at the bottom of the final bill -->
+                <button class="print-button" onclick="window.print()">Print Bill</button>
+            <% } %>
         <% } %>
+
         <br>
         <a class="back-link" href="index.jsp">Return to Home</a>
     </div>

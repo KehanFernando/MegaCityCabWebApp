@@ -237,16 +237,16 @@
                         <label>Registration Number</label>
                         <input type="text" name="registrationNumber" value="<%= customer.getRegistrationNumber() %>" readonly />
                         
-                        <label>Name</label>
+                        <label>Customer Name</label>
                         <input type="text" name="customerName" value="<%= customer.getName() %>" required />
                         
-                        <label>Address</label>
+                        <label>Customer Address</label>
                         <input type="text" name="customerAddress" value="<%= customer.getAddress() %>" required />
                         
-                        <label>NIC</label>
+                        <label>NIC Number</label>
                         <input type="text" name="customerNic" value="<%= customer.getNic() %>" required />
                         
-                        <label>Telephone</label>
+                        <label>Contact Number</label>
                         <input type="text" name="customerTelephone" value="<%= customer.getTelephone() %>" required />
                         
                         <button type="submit">Update Customer Details</button>
@@ -262,16 +262,16 @@
                         <label>Driver ID</label>
                         <input type="text" name="driverId" value="<%= driver.getDriverId() %>" readonly />
                         
-                        <label>Name</label>
+                        <label>Driver Name</label>
                         <input type="text" name="driverName" value="<%= driver.getName() %>" required />
                         
-                        <label>License Number</label>
+                        <label>Driver License Number</label>
                         <input type="text" name="licenseNumber" value="<%= driver.getLicenseNumber() %>" required />
                         
-                        <label>Phone</label>
+                        <label>Driver Contact Number</label>
                         <input type="text" name="phone" value="<%= driver.getPhone() %>" required />
                         
-                        <label>Address</label>
+                        <label>Driver Address</label>
                         <input type="text" name="driverAddress" value="<%= driver.getAddress() %>" required />
                         
                         <label>Assigned Car ID</label>
@@ -296,16 +296,16 @@
                         <label>License Plate</label>
                         <input type="text" name="licensePlate" value="<%= car.getLicensePlate() %>" required />
                         
-                        <label>Model</label>
-                        <input type="text" name="model" value="<%= car.getModel() %>" required />
-                        
-                        <label>Brand</label>
+                        <label>Vehicle Brand</label>
                         <input type="text" name="brand" value="<%= car.getBrand() %>" required />
                         
-                        <label>Color</label>
+                        <label>Vehicle Model</label>
+                        <input type="text" name="model" value="<%= car.getModel() %>" required />
+                        
+                        <label>Vehicle Color</label>
                         <input type="text" name="color" value="<%= car.getColor() %>" required />
                         
-                        <label>Seating Capacity</label>
+                        <label>Vehicle Seating Capacity</label>
                         <input type="number" name="seatingCapacity" value="<%= car.getSeatingCapacity() %>" required />
                         
                         <button type="submit">Update Vehicle Details</button>
