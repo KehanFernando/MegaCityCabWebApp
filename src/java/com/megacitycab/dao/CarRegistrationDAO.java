@@ -40,7 +40,7 @@ public class CarRegistrationDAO {
      * Retrieves a vehicle from the database based on vehicleRegId.
      */
     public Car getCar(String vehicleRegId) throws Exception {
-        String sql = "SELECT vehicleType, vehicleRegId, licensePlate, model, brand, color, seatingCapacity FROM vehicles WHERE vehicleRegId = ?";
+        String sql = "SELECT vehicleType, vehicleRegId, licensePlate, model, brand, color, seatingCapacity, driverId FROM vehicles WHERE vehicleRegId = ?";
         Car car = null;
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -54,6 +54,7 @@ public class CarRegistrationDAO {
                             .brand(rs.getString("brand"))
                             .color(rs.getString("color"))
                             .seatingCapacity(rs.getInt("seatingCapacity"))
+                            .driverId(rs.getString("driverId")) // NEW: set driverId from vehicles table
                             .build();
                 }
             }
@@ -65,7 +66,7 @@ public class CarRegistrationDAO {
      * Updates an existing vehicle record.
      */
     public boolean updateVehicle(Car car) throws Exception {
-        String sql = "UPDATE vehicles SET vehicleType = ?, licensePlate = ?, model = ?, brand = ?, color = ?, seatingCapacity = ? WHERE vehicleRegId = ?";
+        String sql = "UPDATE vehicles SET vehicleType = ?, licensePlate = ?, model = ?, brand = ?, color = ?, seatingCapacity = ?, driverId = ? WHERE vehicleRegId = ?";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -75,7 +76,8 @@ public class CarRegistrationDAO {
             stmt.setString(4, car.getBrand());
             stmt.setString(5, car.getColor());
             stmt.setInt(6, car.getSeatingCapacity());
-            stmt.setString(7, car.getVehicleRegId());
+            stmt.setString(7, car.getDriverId()); // NEW: update driverId column
+            stmt.setString(8, car.getVehicleRegId());
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
@@ -90,7 +92,7 @@ public class CarRegistrationDAO {
      * @throws Exception
      */
     public Car getAvailableVehicle(String vehicleType) throws Exception {
-        String sql = "SELECT vehicleType, vehicleRegId, licensePlate, model, brand, color, seatingCapacity "
+        String sql = "SELECT vehicleType, vehicleRegId, licensePlate, model, brand, color, seatingCapacity, driverId "
                    + "FROM vehicles WHERE vehicleType = ? LIMIT 1";
         Car car = null;
         try (Connection conn = DBConnectionManager.getConnection();
@@ -105,6 +107,7 @@ public class CarRegistrationDAO {
                             .brand(rs.getString("brand"))
                             .color(rs.getString("color"))
                             .seatingCapacity(rs.getInt("seatingCapacity"))
+                            .driverId(rs.getString("driverId"))
                             .build();
                 }
             }
@@ -121,7 +124,7 @@ public class CarRegistrationDAO {
      * @throws Exception
      */
     public Car getAvailableNotBookedVehicle(String vehicleType) throws Exception {
-        String sql = "SELECT vehicleType, vehicleRegId, licensePlate, model, brand, color, seatingCapacity " +
+        String sql = "SELECT vehicleType, vehicleRegId, licensePlate, model, brand, color, seatingCapacity, driverId " +
                      "FROM vehicles " +
                      "WHERE vehicleType = ? " +
                      "AND vehicleRegId NOT IN (SELECT vehicleRegId FROM bookings WHERE vehicleType = ?) " +
@@ -141,6 +144,7 @@ public class CarRegistrationDAO {
                             .brand(rs.getString("brand"))
                             .color(rs.getString("color"))
                             .seatingCapacity(rs.getInt("seatingCapacity"))
+                            .driverId(rs.getString("driverId"))
                             .build();
                 }
             }

@@ -3,8 +3,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mega City Cab - New Booking</title>
+    <title>Mega City Cab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/MCC.png">
     <style>
         /* Reset defaults */
         * {
@@ -168,6 +169,17 @@
             font-size: 1rem;
             color: red;
         }
+        
+        footer {
+            background-color: #fff;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        footer p {
+                    color: #666;
+                    font-size: 0.9rem;
+                }
     </style>
     <script>
         // Function to auto-generate a booking number in the format "BKN" followed by 6 digits.
@@ -341,6 +353,11 @@
 
             <button type="submit">Reserve a Booking</button>
         </form>
+        <br>
+        <footer>
+        <p>© <%= java.time.Year.now() %> Mega City Cab. All rights reserved.</p>
+    </footer>
     </div>
+        
 </body>
 </html>

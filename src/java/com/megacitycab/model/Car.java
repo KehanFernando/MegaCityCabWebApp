@@ -19,6 +19,8 @@ public class Car {
     private final String brand;           // Brand or manufacturer
     private final String color;           // Color of the vehicle
     private final int seatingCapacity;    // Number of seats available
+    // NEW: driverId field from vehicles table
+    private final String driverId;
 
     /**
      * Private constructor to enforce object creation via the Builder.
@@ -33,6 +35,7 @@ public class Car {
         this.brand = builder.brand;
         this.color = builder.color;
         this.seatingCapacity = builder.seatingCapacity;
+        this.driverId = builder.driverId;
     }
 
     // Getters for all fields (no setters to preserve immutability)
@@ -63,6 +66,11 @@ public class Car {
     public int getSeatingCapacity() {
         return seatingCapacity;
     }
+    
+    // NEW: getter for driverId
+    public String getDriverId() {
+        return driverId;
+    }
 
     @Override
     public String toString() {
@@ -74,6 +82,7 @@ public class Car {
                 ", brand='" + brand + '\'' +
                 ", color='" + color + '\'' +
                 ", seatingCapacity=" + seatingCapacity +
+                ", driverId='" + driverId + '\'' +
                 '}';
     }
 
@@ -107,6 +116,8 @@ public class Car {
         private String brand;
         private String color;
         private int seatingCapacity;
+        // NEW: Optional driverId field
+        private String driverId;
 
         /**
          * Builder constructor with the required fields.
@@ -147,6 +158,12 @@ public class Car {
 
         public Builder seatingCapacity(int seatingCapacity) {
             this.seatingCapacity = seatingCapacity;
+            return this;
+        }
+        
+        // NEW: method to set driverId
+        public Builder driverId(String driverId) {
+            this.driverId = driverId;
             return this;
         }
 

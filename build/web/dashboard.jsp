@@ -3,8 +3,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mega City Cab - Dashboard</title>
+    <title>Mega City Cab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/MCC.png">
     <style>
         /* Reset defaults */
         * {
@@ -130,9 +131,9 @@
     </style>
 </head>
 <body>
-    <header class="navbar">
+    <!--<header class="navbar">
         <a href="#" class="brand">Mega City Cab</a>
-    </header>
+    </header>-->
 
     <div class="container">
         <div class="welcome-message">

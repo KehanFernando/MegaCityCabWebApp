@@ -4,7 +4,7 @@ import com.megacitycab.model.Driver;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.ResultSet;  // Added import for ResultSet
+import java.sql.ResultSet;
 
 /**
  * DAO for persisting Driver objects.
@@ -40,7 +40,30 @@ public class DriverDAO {
         }
         return rowInserted;
     }
-        /**
+
+    /**
+     * Updates the vehicles table by setting its driverId based on the provided vehicleRegId.
+     *
+     * @param vehicleRegId the vehicle's registration id to identify the record.
+     * @param driverId the driver's id to be set in the vehicles table.
+     * @return true if the vehicle record was successfully updated; false otherwise.
+     */
+    public boolean updateVehicleDriver(String vehicleRegId, String driverId) {
+        boolean updated = false;
+        String sql = "UPDATE vehicles SET driverId = ? WHERE vehicleRegId = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, driverId);
+            stmt.setString(2, vehicleRegId);
+            updated = stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Consider logging or handling the exception as needed.
+        }
+        return updated;
+    }
+
+    /**
      * Retrieves a driver from the database based on driverId.
      */
     public Driver getDriver(String driverId) throws Exception {
@@ -64,7 +87,8 @@ public class DriverDAO {
         }
         return driver;
     }
-        /**
+
+    /**
      * Updates an existing driver record.
      */
     public boolean updateDriver(Driver driver) throws Exception {
@@ -83,6 +107,4 @@ public class DriverDAO {
             return rowsUpdated > 0;
         }
     }
-
-
 }

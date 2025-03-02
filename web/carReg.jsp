@@ -3,7 +3,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Vehicle Registration - MegaCityCab</title>
+    <title>Mega City Cab</title>
+    <link rel="icon" type="image/png" href="img/MCC.png">
     <style>
         /* Global Reset and Body Styling */
         * {

@@ -29,6 +29,7 @@ public class BookingServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+
         if ("list".equalsIgnoreCase(action)) {
             List<Booking> bookings = bookingService.getAllBookings();
             if (bookings != null && !bookings.isEmpty()) {
@@ -36,6 +37,23 @@ public class BookingServlet extends HttpServlet {
             } else {
                 request.setAttribute("errorMessage", "No bookings found.");
             }
+            request.getRequestDispatcher("displayingBookings.jsp").forward(request, response);
+        } else if ("delete".equalsIgnoreCase(action)) {
+            String bookingNumber = request.getParameter("bookingNumber");
+            if (bookingNumber != null && !bookingNumber.trim().isEmpty()) {
+                boolean isDeleted = bookingService.deleteBooking(bookingNumber);
+                if (isDeleted) {
+                    request.setAttribute("message", "Booking deleted successfully.");
+                } else {
+                    request.setAttribute("errorMessage", "Failed to delete booking.");
+                }
+            } else {
+                request.setAttribute("errorMessage", "Booking number is required to delete booking.");
+            }
+            // Refresh the list after deletion
+            List<Booking> bookings = bookingService.getAllBookings();
+            request.setAttribute("bookings", bookings);
+            request.getRequestDispatcher("displayingBookings.jsp").forward(request, response);
         } else {
             String bookingNumber = request.getParameter("bookingNumber");
             if (bookingNumber != null && !bookingNumber.trim().isEmpty()) {
@@ -44,8 +62,8 @@ public class BookingServlet extends HttpServlet {
             } else {
                 request.setAttribute("errorMessage", "Booking number is required to view booking details.");
             }
+            request.getRequestDispatcher("displayingBookings.jsp").forward(request, response);
         }
-        request.getRequestDispatcher("displayingBookings.jsp").forward(request, response);
     }
 
     @Override
@@ -59,7 +77,7 @@ public class BookingServlet extends HttpServlet {
         String bookingDateStr = request.getParameter("bookingDate");
         String customerRegNo = request.getParameter("customerRegNo");
         
-         // New vehicle fields from the form:
+        // New vehicle fields from the form:
         String vehicleType = request.getParameter("vehicleType");
         String vehicleRegId = request.getParameter("vehicleRegId");
         String vbrand = request.getParameter("brand");

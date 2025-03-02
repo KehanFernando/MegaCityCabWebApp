@@ -8,7 +8,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Customer Registration</title>
+    <title>Mega City Cab</title>
+    <link rel="icon" type="image/png" href="img/MCC.png">
     <style>
         /* Global reset and basic styling */
         * {

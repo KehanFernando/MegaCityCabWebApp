@@ -145,6 +145,8 @@ public class ViewEditServlet extends HttpServlet {
                 } catch (NumberFormatException e) {
                     // Handle invalid seating capacity input if needed.
                 }
+                // Retrieve the driverId for the vehicle update from the new form field name.
+                String vehicleDriverId = request.getParameter("vehicleDriverId");
 
                 Car updatedCar = new Car.Builder(vehicleType, vehicleRegId)
                         .licensePlate(licensePlate)
@@ -152,6 +154,7 @@ public class ViewEditServlet extends HttpServlet {
                         .brand(brand)
                         .color(color)
                         .seatingCapacity(seatingCapacity)
+                        .driverId(vehicleDriverId)
                         .build();
 
                 updateSuccess = service.updateCar(updatedCar);

@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Search &amp; Edit Record</title>
+    <title>Mega City Cab</title>
+    <link rel="icon" type="image/png" href="img/MCC.png">
     <style>
         /* Global Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -135,7 +136,6 @@
           background: url('https://img.icons8.com/?size=100&id=S5D5w5vFLhYp&format=png&color=000000') no-repeat left center;
           background-size: 20px 20px;
         }
-
         /* Tooltip styling on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
           content: 'Dashboard';
@@ -153,12 +153,9 @@
           transition: opacity 0.3s;
           pointer-events: none;
         }
-
-        /* Make tooltip visible on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
           opacity: 1;
         }
-        
         /* Style for the Dashboard link with icon */
         header.navbar .nav-links a[href="index.jsp"] {
           position: relative;
@@ -166,8 +163,6 @@
           background: url('https://img.icons8.com/?size=100&id=111473&format=png&color=000000') no-repeat left center;
           background-size: 20px 20px;
         }
-
-        /* Tooltip styling on hover */
         header.navbar .nav-links a[href="index.jsp"]:hover::after {
           content: 'Dashboard';
           position: absolute;
@@ -184,10 +179,9 @@
           transition: opacity 0.3s;
           pointer-events: none;
         }
-
-        /* Make tooltip visible on hover */
         header.navbar .nav-links a[href="index.jsp"]:hover::after {
           opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -283,6 +277,7 @@
     <%
             } else if(recordType.equals("vehicle")) {
                 com.megacitycab.model.Car car = (com.megacitycab.model.Car) request.getAttribute("car");
+                if(car != null) {
     %>
                 <h2>View/Edit Vehicle Details</h2>
                 <div class="form-section">
@@ -308,10 +303,19 @@
                         <label>Vehicle Seating Capacity</label>
                         <input type="number" name="seatingCapacity" value="<%= car.getSeatingCapacity() %>" required />
                         
+                        <!-- NEW: Display and update the driverId for this vehicle -->
+                        <label>Assigned Driver ID</label>
+                        <input type="text" name="vehicleDriverId" value="<%= car.getDriverId() %>" required />
+                        
                         <button type="submit">Update Vehicle Details</button>
                     </form>
                 </div>
     <%
+                } else {
+    %>
+                <div class="errorMessage">Vehicle record not found.</div>
+    <%
+                }
             }
         }
     %>

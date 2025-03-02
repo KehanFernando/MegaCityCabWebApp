@@ -72,6 +72,35 @@ public class BookingDAO {
     }
 
     /**
+     * Deletes a booking from the database using its booking number.
+     *
+     * @param bookingNumber The unique booking number.
+     * @return true if deletion was successful.
+     * @throws SQLException If an SQL error occurs.
+     */
+    public boolean deleteBooking(String bookingNumber) throws SQLException {
+        String sql = "DELETE FROM bookings WHERE bookingNumber = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, bookingNumber);
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("Deleted booking: " + bookingNumber);
+            } else {
+                System.err.println("No booking found with bookingNumber: " + bookingNumber);
+            }
+            return rowsDeleted > 0;
+        } catch (SQLException ex) {
+            System.err.println("SQLException in deleteBooking:");
+            System.err.println("SQLState: " + ex.getSQLState());
+            System.err.println("Error Code: " + ex.getErrorCode());
+            System.err.println("Message: " + ex.getMessage());
+            ex.printStackTrace();
+            throw ex;
+        }
+    }
+
+    /**
      * Retrieves a booking from the database using its booking number.
      *
      * @param bookingNumber The unique booking number.

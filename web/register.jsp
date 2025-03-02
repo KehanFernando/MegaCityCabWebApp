@@ -3,8 +3,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mega City Cab - Register</title>
+    <title>Mega City Cab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/MCC.png">
     <style>
         /* Reset defaults */
         * {
@@ -228,7 +229,7 @@
             </p>
             <div class="buttons">
                 <a href="customerReg.jsp">Customer Register</a>
-                <a href="carReg.jsp">Car Register</a>
+                <a href="carReg.jsp">Vehicle Register</a>
                 <a href="driverReg.jsp">Driver Register</a>
             </div>
         </div>

@@ -8,7 +8,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Driver Registration</title>
+    <title>Mega City Cab</title>
+    <link rel="icon" type="image/png" href="img/MCC.png">
     <style>
         /* Global Reset and Body Styling */
         * {
@@ -229,22 +230,22 @@
             <div class="error-message"><%= errorMessage %></div>
         <% } %>
         <form action="DriverController" method="post">
-            <label for="driverId">Driver ID:</label>
+            <label for="driverId">Driver ID</label>
             <input type="text" id="driverId" name="driverId" value="<%= generatedDriverId %>" readonly required>
 
-            <label for="name">Name:</label>
+            <label for="name">Name</label>
             <input type="text" id="name" name="name" required placeholder="Enter Name">
 
-            <label for="licenseNumber">License Number:</label>
+            <label for="licenseNumber">License Number</label>
             <input type="text" id="licenseNumber" name="licenseNumber" required placeholder="Enter Driving License Number">
 
-            <label for="phone">Contact Number:</label>
+            <label for="phone">Contact Number</label>
             <input type="text" id="phone" name="phone" required placeholder="Enter Contact Number">
 
-            <label for="address">Address:</label>
+            <label for="address">Address</label>
             <input type="text" id="address" name="address" required placeholder="Enter Address">
 
-            <label for="assignedCarId">Assigned Vehicle ID:</label>
+            <label for="assignedCarId">Assigned Vehicle ID</label>
             <input type="text" id="assignedCarId" name="assignedCarId" placeholder="Enter Vehicle Registration ID ">
 
             <button type="submit">Register</button>

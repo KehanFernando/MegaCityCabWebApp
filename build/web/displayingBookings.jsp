@@ -5,8 +5,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mega City Cab - Booking Details</title>
+    <title>Mega City Cab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/MCC.png">
     <style>
         /* Reset default styles */
         * {
@@ -54,66 +55,60 @@
         }
         /* Style for the Dashboard link with icon */
         header.navbar .nav-links a[href="dashboard.jsp"] {
-          position: relative;
-          padding-left: 30px; /* space for the icon */
-          background: url('https://img.icons8.com/?size=100&id=S5D5w5vFLhYp&format=png&color=000000') no-repeat left center;
-          background-size: 20px 20px;
+            position: relative;
+            padding-left: 30px; /* space for the icon */
+            background: url('https://img.icons8.com/?size=100&id=S5D5w5vFLhYp&format=png&color=000000') no-repeat left center;
+            background-size: 20px 20px;
         }
-
         /* Tooltip styling on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
-          content: 'Dashboard';
-          position: absolute;
-          bottom: -30px; /* position tooltip below the link */
-          left: 50%;
-          transform: translateX(-50%);
-          background: #333;
-          color: #fff;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 0.85rem;
-          white-space: nowrap;
-          opacity: 0;
-          transition: opacity 0.3s;
-          pointer-events: none;
+            content: 'Dashboard';
+            position: absolute;
+            bottom: -30px; /* position tooltip below the link */
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
-
         /* Make tooltip visible on hover */
         header.navbar .nav-links a[href="dashboard.jsp"]:hover::after {
-          opacity: 1;
+            opacity: 1;
         }
-        
         /* Style for the Dashboard link with icon */
         header.navbar .nav-links a[href="index.jsp"] {
-          position: relative;
-          padding-left: 30px; /* space for the icon */
-          background: url('https://img.icons8.com/?size=100&id=111473&format=png&color=000000') no-repeat left center;
-          background-size: 20px 20px;
+            position: relative;
+            padding-left: 30px; /* space for the icon */
+            background: url('https://img.icons8.com/?size=100&id=111473&format=png&color=000000') no-repeat left center;
+            background-size: 20px 20px;
         }
-
         /* Tooltip styling on hover */
         header.navbar .nav-links a[href="index.jsp"]:hover::after {
-          content: 'Dashboard';
-          position: absolute;
-          bottom: -30px; /* position tooltip below the link */
-          left: 50%;
-          transform: translateX(-50%);
-          background: #333;
-          color: #fff;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 0.85rem;
-          white-space: nowrap;
-          opacity: 0;
-          transition: opacity 0.3s;
-          pointer-events: none;
+            content: 'Dashboard';
+            position: absolute;
+            bottom: -30px; /* position tooltip below the link */
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
-
         /* Make tooltip visible on hover */
         header.navbar .nav-links a[href="index.jsp"]:hover::after {
-          opacity: 1;
+            opacity: 1;
         }
-        
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -159,7 +154,6 @@
             padding: 1rem;
             border-radius: 6px;
             margin-bottom: 1rem;
-            cursor: pointer;
             transition: background 0.3s ease;
         }
         .booking-card:hover {
@@ -168,12 +162,49 @@
         .booking-info {
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
         .booking-info span {
             font-size: 1rem;
             color: #333;
         }
+        .delete-btn {
+            background: #ff4d4d;
+            border: none;
+            color: #fff;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            margin-top: 15px;
+            display: block;
+            width: 150px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .delete-btn:hover {
+            background: #e60000;
+        }
+        footer {
+            background-color: #fff;
+            text-align: center;
+            padding: 1rem;
+        }
+        footer p {
+            color: #666;
+            font-size: 0.9rem;
+        }
     </style>
+    <script>
+        // Function to confirm deletion of a booking.
+        function confirmDelete(bookingNumber) {
+            if (confirm("Are you sure you want to cancel booking " + bookingNumber + "?")) {
+                window.location.href = "BookingServlet?action=delete&bookingNumber=" + bookingNumber;
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- Navigation Header -->
@@ -194,7 +225,7 @@
  
 <div class="container">
     <%
-        // Check if a list of bookings was provided.
+        // Check if a list of bookings or a single booking was provided.
         List<Booking> bookings = (List<Booking>) request.getAttribute("bookings");
         Booking booking = (Booking) request.getAttribute("booking");
         String errorMessage = (String) request.getAttribute("errorMessage");
@@ -207,12 +238,13 @@
     %>
         <h1>Bookings List</h1>
         <% for (Booking b : bookings) { %>
-            <!-- Each card is clickable. Clicking sends the bookingNumber to BookingServlet for full details -->
-            <a href="BookingServlet?bookingNumber=<%= b.getBookingNumber() %>" style="text-decoration:none;">
+            <!-- Each card is clickable; clicking loads the booking details -->
+            <a href="BookingServlet?bookingNumber=<%= b.getBookingNumber() %>" style="text-decoration:none; color:inherit;">
                 <div class="booking-card">
                     <div class="booking-info">
                         <span><strong>Booking Number:</strong> <%= b.getBookingNumber() %></span>
-                        <span><strong>Customer Registration Number/NIC:</strong> <%= b.getCustomerRegNo() %></span>
+                        &nbsp;&nbsp;
+                        <span><strong>Customer Reg/NIC:</strong> <%= b.getCustomerRegNo() %></span>
                     </div>
                 </div>
             </a>
@@ -234,11 +266,12 @@
             <p><span class="label">Pickup Location:</span> <%= booking.getCustomerAddress() %></p>
             <p><span class="label">Destination:</span> <%= booking.getDestination() %></p>
             <p>
-            <span class="label">Booking Date:</span>
-            <%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(booking.getBookingDate()) %>
+                <span class="label">Booking Date:</span>
+                <%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(booking.getBookingDate()) %>
             </p>
-
         </div>
+        <!-- Delete button added inside the booking details view -->
+        <button type="button" class="delete-btn" onclick="confirmDelete('<%= booking.getBookingNumber() %>')">Cancel Booking</button>
     <%
         } else {
     %>
@@ -247,6 +280,10 @@
         }
     %>
     <a class="back-link" href="BookingServlet?action=list">Return to Back</a>
+    
+    <footer>
+        <p>© <%= java.time.Year.now() %> Mega City Cab. All rights reserved.</p>
+    </footer>
 </div>
 </body>
 </html>

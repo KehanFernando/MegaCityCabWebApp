@@ -22,6 +22,14 @@ public class DriverService {
      */
     public boolean registerDriver(Driver driver) {
         // Additional business logic can be added here (e.g., validations)
-        return driverDAO.insertDriver(driver);
+        boolean isRegistered = driverDAO.insertDriver(driver);
+        
+        // If the driver is registered and an assignedCarId exists,
+        // update the corresponding vehicle's driverId using vehicleRegId.
+        if(isRegistered && driver.getAssignedCarId() != null && !driver.getAssignedCarId().trim().isEmpty()){
+            driverDAO.updateVehicleDriver(driver.getAssignedCarId(), driver.getDriverId());
+        }
+        
+        return isRegistered;
     }
 }

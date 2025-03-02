@@ -53,4 +53,19 @@ public class BookingService {
             return null;
         }
     }
+    
+    /**
+     * Deletes a booking with the given booking number.
+     * @param bookingNumber the booking number to delete
+     * @return true if deletion was successful, false otherwise
+     */
+    public boolean deleteBooking(String bookingNumber) {
+        try {
+            return BookingDAO.getInstance().deleteBooking(bookingNumber);
+        } catch (SQLException ex) {
+            System.err.println("BookingService: SQLException when deleting booking with bookingNumber: " + bookingNumber);
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }
