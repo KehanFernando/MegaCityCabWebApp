@@ -1,6 +1,6 @@
 # Mega City Cab Web Application
 
-![Mega City Cab Logo](img/MCC.png)
+<!--![Mega City Cab Logo](img/MCC.png)-->
 
 Mega City Cab is a comprehensive web-based cab management system for Colombo City. It streamlines customer bookings, driver and vehicle registration, billing, and record management. The system is built using Java (JSP/Servlets) and follows the MVC pattern with a well-organized package structure. The application is designed with user-friendly interfaces, clear error handling, and modular services using common design patterns such as Singleton, DAO, and Builder.
 
@@ -55,7 +55,7 @@ MegaCityCabWebApp/ (Project Root)
         └── META_INF/
 ```
 
-## Web Application Screenshots
+<!--## Web Application Screenshots
 
 Below are some screenshots of the **Mega City Cab Web Application**:
 
@@ -75,7 +75,7 @@ Below are some screenshots of the **Mega City Cab Web Application**:
 ![Billing Page](screenshots/billing.png)
 
 ### Customer Management
-![Customer Management](screenshots/customer_management.png)
+![Customer Management](screenshots/customer_management.png)-->
 
 ## Installation
 
