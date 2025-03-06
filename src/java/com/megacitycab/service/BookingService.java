@@ -1,5 +1,6 @@
 package com.megacitycab.service;
 
+<<<<<<< HEAD
 import com.megacitycab.dao.DBConnectionManager;
 import com.megacitycab.model.Booking;
 import java.sql.Connection;
@@ -31,6 +32,21 @@ public class BookingService {
      *
      * @return the singleton instance.
      */
+=======
+import com.megacitycab.dao.BookingDAO;
+import com.megacitycab.model.Booking;
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * Provides booking services for the Mega City Cab system.
+ */
+public class BookingService {
+    private static BookingService instance;
+
+    private BookingService() {}
+
+>>>>>>> f05e487 (Updated MegaCityCabWebApp project)
     public static synchronized BookingService getInstance() {
         if (instance == null) {
             instance = new BookingService();
@@ -38,6 +54,7 @@ public class BookingService {
         return instance;
     }
 
+<<<<<<< HEAD
     /**
      * Adds a new booking to the database.
      *
@@ -63,11 +80,23 @@ public class BookingService {
             return rowsInserted > 0;
         } catch (SQLException ex) {
             System.err.println("Error while adding booking: " + ex.getMessage());
+=======
+    public boolean addBooking(Booking booking) {
+        try {
+            boolean added = BookingDAO.getInstance().addBooking(booking);
+            if (!added) {
+                System.err.println("BookingService: addBooking returned false for booking: " + booking);
+            }
+            return added;
+        } catch (SQLException ex) {
+            System.err.println("BookingService: SQLException when adding booking: " + booking);
+>>>>>>> f05e487 (Updated MegaCityCabWebApp project)
             ex.printStackTrace();
             return false;
         }
     }
 
+<<<<<<< HEAD
     /**
      * Retrieves a booking from the database based on the booking number.
      *
@@ -107,5 +136,40 @@ public class BookingService {
             ex.printStackTrace();
         }
         return booking;
+=======
+    public Booking getBooking(String bookingNumber) {
+        try {
+            return BookingDAO.getInstance().getBooking(bookingNumber);
+        } catch (SQLException ex) {
+            System.err.println("BookingService: SQLException when retrieving booking with bookingNumber: " + bookingNumber);
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Booking> getAllBookings() {
+        try {
+            return BookingDAO.getInstance().getAllBookings();
+        } catch (SQLException ex) {
+            System.err.println("BookingService: SQLException when retrieving all bookings.");
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
+     * Deletes a booking with the given booking number.
+     * @param bookingNumber the booking number to delete
+     * @return true if deletion was successful, false otherwise
+     */
+    public boolean deleteBooking(String bookingNumber) {
+        try {
+            return BookingDAO.getInstance().deleteBooking(bookingNumber);
+        } catch (SQLException ex) {
+            System.err.println("BookingService: SQLException when deleting booking with bookingNumber: " + bookingNumber);
+            ex.printStackTrace();
+            return false;
+        }
+>>>>>>> f05e487 (Updated MegaCityCabWebApp project)
     }
 }

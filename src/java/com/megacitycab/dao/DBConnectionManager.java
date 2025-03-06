@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+<<<<<<< HEAD
 /**
  * Manages database connections for the Mega City Cab system.
  * <p>
@@ -20,6 +21,14 @@ public class DBConnectionManager {
     private static final String DB_PASSWORD = "dbpassword";
 
     // Static block to load the MySQL JDBC driver.
+=======
+public final class DBConnectionManager {
+
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/megacitycab?useSSL=false&serverTimezone=UTC";
+    private static final String DB_USER = "root"; // Use your actual MySQL username
+    private static final String DB_PASSWORD = "admin";  // Use your actual MySQL password (if any)
+
+>>>>>>> f05e487 (Updated MegaCityCabWebApp project)
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -29,6 +38,7 @@ public class DBConnectionManager {
         }
     }
 
+<<<<<<< HEAD
     // Private constructor prevents instantiation.
     private DBConnectionManager() {}
 
@@ -41,4 +51,13 @@ public class DBConnectionManager {
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
+=======
+    private DBConnectionManager() { }
+
+    public static Connection getConnection() throws SQLException {
+    System.out.println("DBConnectionManager: Connecting to " + DB_URL + " as " + DB_USER);
+    return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+}
+
+>>>>>>> f05e487 (Updated MegaCityCabWebApp project)
 }
